@@ -5,3 +5,66 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model Driver {
+  id            String  @id @default(uuid())
+  fullName      String  @map("full_name")
+  licenseNumber String  @unique @map("license_number")
+  phone         String?
+
+  involvedParties InvolvedParty[]
+
+  @@map("drivers")
+}
+
+model Vehicle {
+  id           String @id @default(uuid())
+  vin          String @unique
+  licensePlate String @unique @map("license_plate")
+  mark         String
+  model        String
+  year         Int?
+
+  involvedParties InvolvedParty[]
+
+  @@map("vehicles")
+}
+
+model Incident {
+  id          String               @id @default(uuid())
+  date        DateTime
+  location    String
+  description String?
+  severity    EnumIncidentSeverity @default(LOW)
+
+  involvedParties InvolvedParty[]
+
+  @@map("incidents")
+}
+
+model InvolvedParty {
+  id   String        @id @default(uuid())
+  role EnumPartyRole
+
+  driver     Driver?   @relation(fields: [driverId], references: [id])
+  driverId   String?
+  vehicle    Vehicle?  @relation(fields: [vehicleId], references: [id])
+  vehicleId  String?
+  incident   Incident? @relation(fields: [incidentId], references: [id])
+  incidentId String?
+
+  @@unique([driverId, vehicleId, incidentId])
+  @@map("involved_parties")
+}
+
+enum EnumIncidentSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum EnumPartyRole {
+  CULPRIT
+  VICTIM
+}
