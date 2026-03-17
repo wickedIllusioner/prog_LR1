@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -11,20 +12,35 @@ import { VehicleAssignment } from '@prisma/client';
 export class DriversService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getAll(searchTerm?: string) {
-    if (searchTerm) return this.getSearchTermFilter(searchTerm);
+  async getAll(searchTerm?: string, skip?: number, take?: number) {
+    if (searchTerm) return this.getSearchTermFilter(searchTerm, skip, take);
 
-    return this.prismaService.driver.findMany({});
+    return this.prismaService.driver.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: { vehicles: { include: { vehicle: true } } },
+      skip: skip ? Number(skip) : undefined,
+      take: take ? Number(take) : undefined,
+    });
   }
 
   async getById(id: string) {
     const driver = await this.prismaService.driver.findUnique({
       where: { id },
-      include: {
-        involvedParties: true,
+      select: {
+        id: true,
+        fullName: true,
+        licenseNumber: true,
+        phone: true,
         vehicles: {
-          include: {
-            vehicle: true,
+          select: {
+            vehicle: {
+              select: {
+                id: true,
+                mark: true,
+                model: true,
+                licensePlate: true,
+              },
+            },
           },
         },
       },
@@ -34,7 +50,21 @@ export class DriversService {
     return driver;
   }
 
-  private async getSearchTermFilter(searchTerm: string) {
+  async getLookup() {
+    return this.prismaService.driver.findMany({
+      select: {
+        id: true,
+        fullName: true,
+        licenseNumber: true,
+      },
+    });
+  }
+
+  private async getSearchTermFilter(
+    searchTerm: string,
+    skip?: number,
+    take?: number,
+  ) {
     return this.prismaService.driver.findMany({
       where: {
         OR: [
@@ -52,6 +82,8 @@ export class DriversService {
           },
         ],
       },
+      skip: skip ? Number(skip) : undefined,
+      take: take ? Number(take) : undefined,
     });
   }
 
@@ -75,6 +107,15 @@ export class DriversService {
   }
 
   async create(dto: DriverDto) {
+    const existingLicense = await this.prismaService.driver.findUnique({
+      where: { licenseNumber: dto.licenseNumber },
+    });
+    if (existingLicense) {
+      throw new BadRequestException(
+        'Водитель с таким номером удостоверения уже существует',
+      );
+    }
+
     const { vehicleIds, ...driverData } = dto;
 
     return this.prismaService.driver.create({
@@ -96,6 +137,20 @@ export class DriversService {
     const { vehicleIds, ...driverData } = dto;
 
     await this.getById(id);
+
+    if (dto.licenseNumber) {
+      const conflict = await this.prismaService.driver.findFirst({
+        where: {
+          licenseNumber: dto.licenseNumber,
+          NOT: { id: id },
+        },
+      });
+      if (conflict) {
+        throw new BadRequestException(
+          `Водитель с удостоверением ${dto.licenseNumber} уже существует`,
+        );
+      }
+    }
 
     return this.prismaService.driver.update({
       where: { id },

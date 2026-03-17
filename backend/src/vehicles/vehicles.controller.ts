@@ -19,8 +19,17 @@ export class VehiclesController {
   constructor(private readonly vehiclesService: VehiclesService) {}
 
   @Get()
-  async getAll(@Query('searchTerm') searchTerm?: string) {
-    return this.vehiclesService.getAll(searchTerm);
+  async getAll(
+    @Query('searchTerm') searchTerm?: string,
+    @Query('skip') skip?: number,
+    @Query('take') take?: number,
+  ) {
+    return this.vehiclesService.getAll(searchTerm, skip, take);
+  }
+
+  @Get('lookup')
+  async getLookup() {
+    return this.vehiclesService.getLookup();
   }
 
   @Get(':id')

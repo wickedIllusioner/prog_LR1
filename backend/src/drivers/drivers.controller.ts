@@ -20,8 +20,17 @@ export class DriversController {
   constructor(private readonly driversService: DriversService) {}
 
   @Get()
-  async getAll(@Query('searchTerm') searchTerm?: string) {
-    return this.driversService.getAll(searchTerm);
+  async getAll(
+    @Query('searchTerm') searchTerm?: string,
+    @Query('skip') skip?: number,
+    @Query('take') take?: number,
+  ) {
+    return this.driversService.getAll(searchTerm, skip, take);
+  }
+
+  @Get('lookup')
+  async getLookup() {
+    return this.driversService.getLookup();
   }
 
   @Get(':id')

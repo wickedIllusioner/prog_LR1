@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { VehicleDto } from './dto/vehicle.dto';
 
@@ -6,20 +10,36 @@ import { VehicleDto } from './dto/vehicle.dto';
 export class VehiclesService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async getAll(searchTerm?: string) {
-    if (searchTerm) return this.getSearchTermFilter(searchTerm);
+  async getAll(searchTerm?: string, skip?: number, take?: number) {
+    if (searchTerm) return this.getSearchTermFilter(searchTerm, skip, take);
 
-    return this.prismaService.vehicle.findMany({});
+    return this.prismaService.vehicle.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: { drivers: { include: { driver: true } } },
+      skip: skip ? Number(skip) : undefined,
+      take: take ? Number(take) : undefined,
+    });
   }
 
   async getById(id: string) {
     const vehicle = await this.prismaService.vehicle.findUnique({
       where: { id },
-      include: {
-        involvedParties: true,
+      select: {
+        id: true,
+        vin: true,
+        licensePlate: true,
+        mark: true,
+        model: true,
+        year: true,
         drivers: {
-          include: {
-            driver: true,
+          select: {
+            driver: {
+              select: {
+                id: true,
+                fullName: true,
+                licenseNumber: true,
+              },
+            },
           },
         },
       },
@@ -30,7 +50,22 @@ export class VehiclesService {
     return vehicle;
   }
 
-  private async getSearchTermFilter(searchTerm: string) {
+  async getLookup() {
+    return this.prismaService.vehicle.findMany({
+      select: {
+        id: true,
+        licensePlate: true,
+        mark: true,
+        model: true,
+      },
+    });
+  }
+
+  private async getSearchTermFilter(
+    searchTerm: string,
+    skip?: number,
+    take?: number,
+  ) {
     return this.prismaService.vehicle.findMany({
       where: {
         OR: [
@@ -54,10 +89,30 @@ export class VehiclesService {
           },
         ],
       },
+      skip: skip ? Number(skip) : undefined,
+      take: take ? Number(take) : undefined,
     });
   }
 
   async create(dto: VehicleDto) {
+    const existingVin = await this.prismaService.vehicle.findUnique({
+      where: { vin: dto.vin },
+    });
+    if (existingVin) {
+      throw new BadRequestException(
+        `Транспорт с VIN ${dto.vin} уже зарегистрирован`,
+      );
+    }
+
+    const existingPlate = await this.prismaService.vehicle.findUnique({
+      where: { licensePlate: dto.licensePlate },
+    });
+    if (existingPlate) {
+      throw new BadRequestException(
+        `Автомобиль с номером ${dto.licensePlate} уже есть в базе`,
+      );
+    }
+
     return this.prismaService.vehicle.create({
       data: {
         ...dto,
@@ -70,6 +125,30 @@ export class VehiclesService {
 
   async update(id: string, dto: VehicleDto) {
     await this.getById(id);
+
+    const vinConflict = await this.prismaService.vehicle.findFirst({
+      where: {
+        vin: dto.vin,
+        NOT: { id: id },
+      },
+    });
+    if (vinConflict) {
+      throw new BadRequestException(
+        `VIN ${dto.vin} уже принадлежит другому ТС`,
+      );
+    }
+
+    const plateConflict = await this.prismaService.vehicle.findFirst({
+      where: {
+        licensePlate: dto.licensePlate,
+        NOT: { id: id },
+      },
+    });
+    if (plateConflict) {
+      throw new BadRequestException(
+        `Номер ${dto.licensePlate} уже занят другим ТС`,
+      );
+    }
 
     return this.prismaService.vehicle.update({
       where: { id },

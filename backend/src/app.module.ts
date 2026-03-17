@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
-import { InvolvedPartiesModule } from './involved-parties/involved-parties.module';
 import { IncidentsModule } from './incidents/incidents.module';
 import { VehiclesModule } from './vehicles/vehicles.module';
 import { DriversModule } from './drivers/drivers.module';
@@ -16,7 +15,6 @@ import { DriversModule } from './drivers/drivers.module';
     DriversModule,
     VehiclesModule,
     IncidentsModule,
-    InvolvedPartiesModule,
   ],
 })
 export class AppModule {}
