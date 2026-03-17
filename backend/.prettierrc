@@ -1,11 +1,11 @@
 {
-	"trailingComma": "none",
-	"useTabs": true,
-	"semi": false,
+	"trailingComma": "all",
+	"useTabs": false,
+	"semi": true,
 	"tabWidth": 2,
-	"jsxSingleQuote": true,
 	"singleQuote": true,
-	"arrowParens": "avoid",
+	"arrowParens": "always",
+	"endOfLine": "auto",
 	"importOrderSeparation": true,
 	"importOrderSortSpecifiers": true
 }
