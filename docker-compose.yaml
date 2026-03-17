@@ -1,11 +1,10 @@
 services:
-  backend:
-    build: ./backend
+  db:
     container_name: psql_db
     image: postgres:16
     restart: always
     env_file:
-      - ./backend/.env
+      - .env
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -14,6 +13,33 @@ services:
       - ${POSTGRES_PORT}:5432
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - auto_incident_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DATABASE}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: auto-incident-backend
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - PORT=${SERVER_PORT}
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DATABASE}?schema=public
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
     networks:
       - auto_incident_network
 
