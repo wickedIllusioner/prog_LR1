@@ -56,3 +56,5 @@ frontend/.gitignore
 /out/
 
 .vercel
+
+docker-compose.db.yaml

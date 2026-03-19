@@ -14,6 +14,6 @@ export const PUBLIC_URL = {
 	vehicleEdit: (id: string) => PUBLIC_URL.vehicles(id),
 
 	incidents: (url = '') => PUBLIC_URL.root(`/incidents${url ? `/${url}` : ''}`),
-	incidentrCreate: () => PUBLIC_URL.incidents('/create'),
+	incidentsCreate: () => PUBLIC_URL.incidents('/create'),
 	incidentEdit: (id: string) => PUBLIC_URL.incidents(id)
 }

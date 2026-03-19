@@ -20,11 +20,15 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 256M
 
   backend:
     build:
       context: ./backend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     container_name: auto-incident-backend
     restart: always
     env_file:
@@ -37,16 +41,17 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
     networks:
       - auto_incident_network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
 
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
       args:
         - NEXT_PUBLIC_API_URL=http://${SERVER_DOMAIN}:${SERVER_PORT}
     container_name: auto-incident-frontend
@@ -63,12 +68,12 @@ services:
         condition: service_healthy
       backend:
         condition: service_started
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-      - /app/.next
     networks:
       - auto_incident_network
+    deploy:
+      resources:
+        limits:
+          memory: 768M
 
 volumes:
   postgres_data:

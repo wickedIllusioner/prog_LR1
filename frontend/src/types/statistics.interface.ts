@@ -9,9 +9,9 @@ export interface IStatistics {
 	severityPie: {
 		type: IncidentSeverity
 		value: number
-	}
+	}[]
 	topOffenders: {
 		name: string
 		count: number
-	}
+	}[]
 }
