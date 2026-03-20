@@ -6,6 +6,7 @@ import { IVehicleInput } from '@/src/types/vehicle.interface'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useMemo } from 'react'
+import toast from 'react-hot-toast'
 
 export function useCreateVehicle() {
 	const router = useRouter()
@@ -18,6 +19,7 @@ export function useCreateVehicle() {
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get vehicles'] })
 			queryClient.invalidateQueries({ queryKey: ['get vehicles lookup'] })
+      toast.success('Операция создания прошла успешно')
 			router.push(PUBLIC_URL.vehicles())
 		}
 	})

@@ -3,8 +3,9 @@
 import { PUBLIC_URL } from '@/src/config/url.config'
 import { vehicleService } from '@/src/services/vehicle.service'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import { useMemo } from 'react'
+import toast from 'react-hot-toast'
 
 export const useDeleteVehicle = () => {
   const router = useRouter()
@@ -16,7 +17,11 @@ export const useDeleteVehicle = () => {
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get vehicles'] })
       router.push(PUBLIC_URL.vehicles())
-		}
+		},
+    onError(error: any) {
+      const message = error.response?.data?.message || 'Произошла ошибка при удалении'
+      toast.error(message)
+    }
 	})
 
 	return useMemo(

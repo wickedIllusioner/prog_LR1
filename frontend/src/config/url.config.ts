@@ -7,13 +7,13 @@ export const PUBLIC_URL = {
 
 	drivers: (url = '') => PUBLIC_URL.root(`/drivers${url ? `/${url}` : ''}`),
 	driverCreate: () => PUBLIC_URL.drivers('/create'),
-	driverEdit: (id: string) => PUBLIC_URL.drivers(id),
+	driverEdit: (id: string = '') => PUBLIC_URL.drivers(id),
 
 	vehicles: (url = '') => PUBLIC_URL.root(`/vehicles${url ? `/${url}` : ''}`),
 	vehicleCreate: () => PUBLIC_URL.vehicles('/create'),
-	vehicleEdit: (id: string) => PUBLIC_URL.vehicles(id),
+	vehicleEdit: (id: string = '') => PUBLIC_URL.vehicles(id),
 
 	incidents: (url = '') => PUBLIC_URL.root(`/incidents${url ? `/${url}` : ''}`),
 	incidentsCreate: () => PUBLIC_URL.incidents('/create'),
-	incidentEdit: (id: string) => PUBLIC_URL.incidents(id)
+	incidentEdit: (id: string = '') => PUBLIC_URL.incidents(id)
 }

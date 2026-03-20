@@ -8,12 +8,70 @@ import {
 	DropdownMenuGroup,
 	DropdownMenuItem,
 	DropdownMenuLabel,
-	DropdownMenuSeparator,
 	DropdownMenuTrigger
 } from '@/src/components/ui/dropdown-menu'
+import { ConfirmModal } from '@/src/components/ui/modals/ConfirmModal'
+import { PUBLIC_URL } from '@/src/config/url.config'
+import { useDeleteVehicle } from '@/src/hooks/vehicles/useDeleteVehicle'
 import { IVehicle } from '@/src/types/vehicle.interface'
 import { ColumnDef } from '@tanstack/react-table'
 import { Hash, MoreHorizontal, User } from 'lucide-react'
+import Link from 'next/link'
+import { useState } from 'react'
+
+const ActionCell = ({ vehicle }: { vehicle: IVehicle }) => {
+	const [isOpen, setIsOpen] = useState(false)
+	const { deleteVehicle, isLoadingDelete } = useDeleteVehicle()
+
+	return (
+		<>
+			<DropdownMenu>
+				<DropdownMenuTrigger asChild>
+					<Button variant='ghost' className='size-8 p-0'>
+						<span className='sr-only'>Открыть меню</span>
+						<MoreHorizontal className='size-4' />
+					</Button>
+				</DropdownMenuTrigger>
+				<DropdownMenuContent align='end'>
+					<DropdownMenuGroup>
+						<DropdownMenuLabel>Действия</DropdownMenuLabel>
+
+						<DropdownMenuItem
+							onClick={() => navigator.clipboard.writeText(vehicle.id)}
+						>
+							Копировать ID
+						</DropdownMenuItem>
+
+						<Link href={PUBLIC_URL.vehicleEdit(vehicle.id)}>
+							<DropdownMenuItem className='cursor-pointer'>
+								Редактировать
+							</DropdownMenuItem>
+						</Link>
+
+						<DropdownMenuItem
+							className='text-destructive focus:text-destructive cursor-pointer'
+							onClick={() => setIsOpen(true)}
+						>
+							Удалить
+						</DropdownMenuItem>
+					</DropdownMenuGroup>
+				</DropdownMenuContent>
+			</DropdownMenu>
+
+			<ConfirmModal
+				isOpen={isOpen}
+				onClose={() => setIsOpen(false)}
+				onConfirm={() => {
+					deleteVehicle(vehicle.id)
+					setIsOpen(false)
+				}}
+				isLoading={isLoadingDelete}
+				title='Удалить транспорт?'
+				description={`Вы уверены, что хотите удалить ${vehicle.mark} ${vehicle.model}? Это действие нельзя отменить.`}
+			/>
+		</>
+	)
+}
 
 export const vehicleColumns: ColumnDef<IVehicle>[] = [
 	{
@@ -58,33 +116,30 @@ export const vehicleColumns: ColumnDef<IVehicle>[] = [
 		)
 	},
 	{
-		id: 'actions',
+		id: 'drivers_count',
+		header: 'Водители',
 		cell: ({ row }) => {
-			const vehicle = row.original
+			const drivers = row.original.drivers || []
+			const count = drivers.length
 
 			return (
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant='ghost' className='h-8 w-8 p-0'>
-							<MoreHorizontal className='h-4 w-4' />
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent align='end'>
-						<DropdownMenuGroup>
-							<DropdownMenuLabel>Действия</DropdownMenuLabel>
-							<DropdownMenuItem
-								onClick={() => navigator.clipboard.writeText(vehicle.id)}
-							>
-								Копировать ID
-							</DropdownMenuItem>
-							<DropdownMenuItem>Редактировать</DropdownMenuItem>
-							<DropdownMenuItem className='text-destructive'>
-								Удалить
-							</DropdownMenuItem>
-						</DropdownMenuGroup>
-					</DropdownMenuContent>
-				</DropdownMenu>
+				<div className='flex items-center gap-2'>
+					{count > 0 ? (
+						<Badge variant='secondary' className='font-normal py-1'>
+							<User className='mr-1.5 size-3 text-muted-foreground' />
+							{count} {count === 1 ? 'водитель' : 'водителя'}
+						</Badge>
+					) : (
+						<span className='text-xs text-muted-foreground/60 italic px-2'>
+							Нет водителей
+						</span>
+					)}
+				</div>
 			)
 		}
+	},
+	{
+		id: 'actions',
+		cell: ({ row }) => <ActionCell vehicle={row.original} />
 	}
 ]

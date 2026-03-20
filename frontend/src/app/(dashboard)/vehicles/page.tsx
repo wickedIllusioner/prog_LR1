@@ -5,6 +5,8 @@ import { vehicleColumns } from './columns'
 import { useGetVehicles } from '@/src/hooks/vehicles/useGetVehicles' // Твой хук
 import { Plus, Truck } from 'lucide-react'
 import { Button } from '@/src/components/ui/button'
+import Link from 'next/link'
+import { PUBLIC_URL } from '@/src/config/url.config'
 
 export default function VehiclesPage() {
 	const { vehicles, isLoading } = useGetVehicles()
@@ -18,9 +20,11 @@ export default function VehiclesPage() {
 						Учет транспортных средств и их технических данных
 					</p>
 				</div>
+        <Link href={PUBLIC_URL.vehicleCreate()}>
 				<Button className='gap-2 shadow-sm'>
 					<Plus className='size-4' /> Добавить ТС
 				</Button>
+        </Link>
 			</div>
 
 			{isLoading ? (

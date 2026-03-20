@@ -3,8 +3,10 @@
 import { driverColumns } from './columns'
 import { Button } from '@/src/components/ui/button'
 import { DataTable } from '@/src/components/ui/data-table'
+import { PUBLIC_URL } from '@/src/config/url.config'
 import { useGetDrivers } from '@/src/hooks/drivers/useGetDrivers'
 import { Plus } from 'lucide-react'
+import Link from 'next/link'
 
 export default function DriversPage() {
 	const { drivers, isLoading } = useGetDrivers()
@@ -18,9 +20,11 @@ export default function DriversPage() {
 						Управление списком водителей и закрепленным транспортом
 					</p>
 				</div>
-				<Button className='gap-2'>
-					<Plus className='size-4' /> Добавить водителя
-				</Button>
+				<Link href={PUBLIC_URL.driverCreate()}>
+					<Button className='gap-2'>
+						<Plus className='size-4' /> Добавить водителя
+					</Button>
+				</Link>
 			</div>
 
 			{isLoading ? (

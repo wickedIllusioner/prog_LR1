@@ -9,6 +9,6 @@ export interface IDriver {
   createdAt: string
 }
 
-export interface IDriverInput extends Pick<IDriver, 'fullName' | 'licenseNumber'> {
+export interface IDriverInput extends Pick<IDriver, 'fullName' | 'licenseNumber' | 'phone'> {
   vehicleIds?: string[]
 }

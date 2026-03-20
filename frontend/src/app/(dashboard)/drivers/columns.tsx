@@ -6,12 +6,74 @@ import {
 	DropdownMenuGroup,
 	DropdownMenuItem,
 	DropdownMenuLabel,
-	DropdownMenuSeparator,
 	DropdownMenuTrigger
 } from '@/src/components/ui/dropdown-menu'
+import { ConfirmModal } from '@/src/components/ui/modals/ConfirmModal'
+import { PUBLIC_URL } from '@/src/config/url.config'
+import { useDeleteDriver } from '@/src/hooks/drivers/useDeleteDriver'
 import { IDriver } from '@/src/types/driver.interface'
 import { ColumnDef } from '@tanstack/react-table'
-import { MoreHorizontal, Phone, Truck } from 'lucide-react'
+import {
+	MoreHorizontal,
+	Phone,
+	Truck
+} from 'lucide-react'
+import Link from 'next/link'
+import { useState } from 'react'
+
+const ActionCell = ({ driver }: { driver: IDriver }) => {
+	const [isOpen, setIsOpen] = useState(false)
+	const { deleteDriver, isLoadingDelete } = useDeleteDriver()
+
+	return (
+		<>
+			<DropdownMenu>
+				<DropdownMenuTrigger asChild>
+					<Button variant='ghost' className='size-8 p-0'>
+						<span className='sr-only'>Открыть меню</span>
+						<MoreHorizontal className='size-4' />
+					</Button>
+				</DropdownMenuTrigger>
+				<DropdownMenuContent align='end'>
+					<DropdownMenuGroup>
+						<DropdownMenuLabel>Действия</DropdownMenuLabel>
+
+						<DropdownMenuItem
+							onClick={() => navigator.clipboard.writeText(driver.id)}
+						>
+							Копировать ID
+						</DropdownMenuItem>
+
+						<Link href={PUBLIC_URL.driverEdit(driver.id)}>
+							<DropdownMenuItem className='cursor-pointer'>
+								Редактировать
+							</DropdownMenuItem>
+						</Link>
+
+						<DropdownMenuItem
+							className='text-destructive focus:text-destructive cursor-pointer'
+							onClick={() => setIsOpen(true)}
+						>
+							Удалить
+						</DropdownMenuItem>
+					</DropdownMenuGroup>
+				</DropdownMenuContent>
+			</DropdownMenu>
+
+			<ConfirmModal
+				isOpen={isOpen}
+				onClose={() => setIsOpen(false)}
+				onConfirm={() => {
+					deleteDriver(driver.id)
+					setIsOpen(false)
+				}}
+				isLoading={isLoadingDelete}
+				title='Удалить водителя?'
+				description={`Вы уверены, что хотите удалить ${driver.fullName}? Это действие нельзя отменить.`}
+			/>
+		</>
+	)
+}
 
 export const driverColumns: ColumnDef<IDriver>[] = [
 	{
@@ -52,11 +114,6 @@ export const driverColumns: ColumnDef<IDriver>[] = [
 						<Truck className='mr-1 size-3' />
 						{count} ед.
 					</Badge>
-					{count > 0 && (
-						<span className='text-[10px] text-muted-foreground truncate max-w-[100px]'>
-							{vehicles[0].model} {vehicles.length > 1 ? '...' : ''}
-						</span>
-					)}
 				</div>
 			)
 		}
@@ -75,31 +132,6 @@ export const driverColumns: ColumnDef<IDriver>[] = [
 	},
 	{
 		id: 'actions',
-		cell: ({ row }) => {
-			const driver = row.original
-
-			return (
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant='ghost' className='size-8 p-0'>
-							<span className='sr-only'>Открыть меню</span>
-							<MoreHorizontal className='size-4' />
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent align='end'>
-						<DropdownMenuGroup>
-							<DropdownMenuLabel>Действия</DropdownMenuLabel>
-							<DropdownMenuItem
-								onClick={() => navigator.clipboard.writeText(driver.id)}
-							>
-								Копировать ID
-							</DropdownMenuItem>
-							<DropdownMenuItem>Редактировать</DropdownMenuItem>
-							<DropdownMenuItem variant='destructive'>Удалить</DropdownMenuItem>
-						</DropdownMenuGroup>
-					</DropdownMenuContent>
-				</DropdownMenu>
-			)
-		}
+		cell: ({ row }) => <ActionCell driver={row.original} />
 	}
 ]

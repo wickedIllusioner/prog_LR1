@@ -20,7 +20,10 @@ export const useUpdateIncident = () => {
 
 	const { mutate: updateIncident, isPending: isLoadingUpdate } = useMutation({
 		mutationKey: ['update incident'], 
-		mutationFn: (data: IIncidentInput) => incidentService.update(params.id, data),
+		mutationFn: (data: IIncidentInput) => {
+      if (!params.id) throw new Error('ID инцидента не найден')
+      return incidentService.update(params.id, data)
+    },
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get incidents'] })
 			router.push(PUBLIC_URL.incidents())

@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { VehicleDto } from './dto/vehicle.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class VehiclesService {
@@ -164,8 +165,19 @@ export class VehiclesService {
   async delete(id: string) {
     await this.getById(id);
 
-    return this.prismaService.vehicle.delete({
-      where: { id },
-    });
+    try {
+      return this.prismaService.vehicle.delete({
+        where: { id },
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2003') {
+          throw new BadRequestException(
+            'Нельзя удалить транспорт, так как он закреплен за водителем',
+          );
+        }
+      }
+      throw error;
+    }
   }
 }

@@ -1,14 +1,14 @@
 import { api } from '../api/api.interceptors'
 import { API_URL } from '../config/api.config'
-import { IDriver } from '../types/driver.interface'
+import { IDriver, IDriverInput } from '../types/driver.interface'
 
 class DriverService {
 	async getAll(searchTerm?: string, skip?: number, take?: number) {
-		const { data } = await api<IDriver[]>({
+		const { data } = await api<IDriver[]>(({
 			url: API_URL.drivers(),
 			method: 'GET',
 			params: { searchTerm, skip, take }
-		})
+		}))
 		return data || []
 	}
 
@@ -21,16 +21,16 @@ class DriverService {
 	}
 
 	async getLookup() {
-		const { data } = await api<
+		const { data } = await api<(
 			{ id: string; fullName: string; licenseNumber: string }[]
-		>({
+		)>(({
 			url: API_URL.drivers(`/lookup`),
 			method: 'GET'
-		})
+		}))
 		return data
 	}
 
-	async create(data: Partial<IDriver> & { vehicleIds?: string[] }) {
+	async create(data: IDriverInput) {
 		const { data: createdDriver } = await api<IDriver>({
 			url: API_URL.drivers(),
 			method: 'POST',
@@ -39,10 +39,10 @@ class DriverService {
 		return createdDriver
 	}
 
-	async update(id: string, data: Partial<IDriver> & { vehicleIds?: string[] }) {
+	async update(id: string, data: IDriverInput) {
 		const { data: updatedDriver } = await api<IDriver>({
-			url: API_URL.drivers(`/${id}`),
-			method: 'POST',
+			url: API_URL.drivers(`${id}`),
+			method: 'PUT',
 			data
 		})
 		return updatedDriver
