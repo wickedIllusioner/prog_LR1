@@ -8,13 +8,73 @@ import {
 	DropdownMenuGroup,
 	DropdownMenuItem,
 	DropdownMenuLabel,
-	DropdownMenuSeparator,
 	DropdownMenuTrigger
 } from '@/src/components/ui/dropdown-menu'
+import { ConfirmModal } from '@/src/components/ui/modals/ConfirmModal'
+import { PUBLIC_URL } from '@/src/config/url.config'
+import { useDeleteIncident } from '@/src/hooks/incidents/useDeleteIncident'
 import { IIncident, IncidentSeverity } from '@/src/types/incident.interface'
-import { ParticipantRole } from '@/src/types/involved-party.interface'
 import { ColumnDef } from '@tanstack/react-table'
-import { AlertTriangle, Calendar, MapPin, MoreHorizontal } from 'lucide-react'
+import {
+	Calendar,
+	Copy,
+	Edit2,
+	MapPin,
+	MoreHorizontal,
+	Trash2
+} from 'lucide-react'
+import Link from 'next/link'
+import { useState } from 'react'
+
+const ActionCell = ({ incidentId }: { incidentId: string }) => {
+	const [isConfirmOpen, setIsConfirmOpen] = useState(false)
+	const { deleteIncident, isLoadingDelete } = useDeleteIncident()
+
+	return (
+		<>
+			<ConfirmModal
+				isOpen={isConfirmOpen}
+				onClose={() => setIsConfirmOpen(false)}
+				onConfirm={() => deleteIncident(incidentId)}
+				loading={isLoadingDelete}
+				title='Удалить инцидент?'
+				description='Это действие необратимо. Запись об инциденте и связи с участниками будут удалены из базы данных.'
+			/>
+
+			<DropdownMenu>
+				<DropdownMenuTrigger asChild>
+					<Button variant='ghost' className='size-8 p-0'>
+						<MoreHorizontal className='size-4' />
+					</Button>
+				</DropdownMenuTrigger>
+				<DropdownMenuContent align='end'>
+					<DropdownMenuGroup>
+						<DropdownMenuLabel>Действия</DropdownMenuLabel>
+						<DropdownMenuItem
+							onClick={() => navigator.clipboard.writeText(incidentId)}
+							className='gap-2'
+						>
+							Копировать ID
+						</DropdownMenuItem>
+
+						<Link href={PUBLIC_URL.incidentEdit(incidentId)}>
+							<DropdownMenuItem className='gap-2'>
+								Редактировать
+							</DropdownMenuItem>
+						</Link>
+
+						<DropdownMenuItem
+							className='text-destructive gap-2'
+							onClick={() => setIsConfirmOpen(true)}
+						>
+							Удалить
+						</DropdownMenuItem>
+					</DropdownMenuGroup>
+				</DropdownMenuContent>
+			</DropdownMenu>
+		</>
+	)
+}
 
 const severityConfig: Record<
 	IncidentSeverity,
@@ -80,33 +140,6 @@ export const incidentColumns: ColumnDef<IIncident>[] = [
 	},
 	{
 		id: 'actions',
-		cell: ({ row }) => {
-			const incident = row.original
-
-			return (
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant='ghost' className='size-8 p-0'>
-							<MoreHorizontal className='size-4' />
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent align='end'>
-						<DropdownMenuGroup>
-							<DropdownMenuLabel>Действия</DropdownMenuLabel>
-							<DropdownMenuItem
-								onClick={() => navigator.clipboard.writeText(incident.id)}
-							>
-								Копировать ID
-							</DropdownMenuItem>
-							<DropdownMenuItem>Детали</DropdownMenuItem>
-							<DropdownMenuItem>Редактировать</DropdownMenuItem>
-							<DropdownMenuItem className='text-destructive'>
-								Удалить
-							</DropdownMenuItem>
-						</DropdownMenuGroup>
-					</DropdownMenuContent>
-				</DropdownMenu>
-			)
-		}
+		cell: ({ row }) => <ActionCell incidentId={row.original.id} />
 	}
 ]

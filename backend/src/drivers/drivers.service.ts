@@ -87,25 +87,6 @@ export class DriversService {
     });
   }
 
-  async assignVehicle(
-    driverId: string,
-    vehicleId: string,
-  ): Promise<VehicleAssignment> {
-    try {
-      return await this.prismaService.vehicleAssignment.upsert({
-        where: {
-          driverId_vehicleId: { driverId, vehicleId },
-        },
-        create: { driverId, vehicleId },
-        update: {},
-      });
-    } catch (error) {
-      throw new InternalServerErrorException(
-        'Ошибка при назначении ТС водителю',
-      );
-    }
-  }
-
   async create(dto: DriverDto) {
     const existingLicense = await this.prismaService.driver.findUnique({
       where: { licenseNumber: dto.licenseNumber },

@@ -27,6 +27,8 @@ export class IncidentsService {
         involvedParties: {
           select: {
             role: true,
+            driverId: true,
+            vehicleId: true,
             driver: {
               select: {
                 fullName: true,

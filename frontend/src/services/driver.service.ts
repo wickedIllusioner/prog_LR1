@@ -24,7 +24,7 @@ class DriverService {
 		const { data } = await api<(
 			{ id: string; fullName: string; licenseNumber: string }[]
 		)>(({
-			url: API_URL.drivers(`/lookup`),
+			url: API_URL.drivers(`lookup`),
 			method: 'GET'
 		}))
 		return data

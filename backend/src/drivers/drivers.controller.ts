@@ -52,15 +52,6 @@ export class DriversController {
   }
 
   @HttpCode(200)
-  @Patch(':driverId/assign/:vehicleId')
-  async assignVehicle(
-    @Param('driverId') driverId: string,
-    @Param('vehicleId') vehicleId: string,
-  ) {
-    return await this.driversService.assignVehicle(driverId, vehicleId);
-  }
-
-  @HttpCode(200)
   @Delete(':id')
   async deleteDriver(@Param('id') id: string) {
     return this.driversService.delete(id);

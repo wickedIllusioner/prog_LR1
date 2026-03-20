@@ -1,15 +1,17 @@
 'use client'
 
-import { DataTable } from '@/src/components/ui/data-table'
 import { incidentColumns } from './columns'
-import { useGetIncidents } from '@/src/hooks/incidents/useGetIncidents'
-import { Plus, AlertOctagon } from 'lucide-react'
 import { Button } from '@/src/components/ui/button'
+import { DataTable } from '@/src/components/ui/data-table'
+import { PUBLIC_URL } from '@/src/config/url.config'
+import { useGetIncidents } from '@/src/hooks/incidents/useGetIncidents'
+import { AlertOctagon, Plus } from 'lucide-react'
+import Link from 'next/link'
 import { useState } from 'react'
 
 export default function IncidentsPage() {
 	const [searchTerm, setSearchTerm] = useState('')
-	
+
 	const { incidents, isLoading } = useGetIncidents(searchTerm)
 
 	return (
@@ -24,9 +26,11 @@ export default function IncidentsPage() {
 						Регистрация и мониторинг происшествий на дорогах
 					</p>
 				</div>
-				<Button className='gap-2 shadow-md bg-destructive hover:bg-destructive/90 text-white'>
-					<Plus className='size-4' /> Сообщить о ДТП
-				</Button>
+				<Link href={PUBLIC_URL.incidentsCreate()}>
+					<Button className='gap-2 shadow-md bg-destructive hover:bg-destructive/90 text-white'>
+						<Plus className='size-4' /> Сообщить о ДТП
+					</Button>
+				</Link>
 			</div>
 
 			{isLoading ? (
@@ -35,9 +39,9 @@ export default function IncidentsPage() {
 				</div>
 			) : (
 				<div className='bg-card/30 rounded-lg p-2'>
-					<DataTable 
-						columns={incidentColumns} 
-						data={incidents || []} 
+					<DataTable
+						columns={incidentColumns}
+						data={incidents || []}
 						filterKey='location'
 					/>
 				</div>
