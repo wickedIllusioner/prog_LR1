@@ -113,7 +113,7 @@ export const incidentColumns: ColumnDef<IIncident>[] = [
 		accessorKey: 'severity',
 		header: 'Тяжесть',
 		cell: ({ row }) => {
-			const rawSeverity = row.getValue('severity') as string
+			const rawSeverity = row.original.severity
 			const severity = rawSeverity?.toUpperCase() as IncidentSeverity
 
 			const config = severityConfig[severity] || {

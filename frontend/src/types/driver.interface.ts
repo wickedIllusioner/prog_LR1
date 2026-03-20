@@ -5,7 +5,7 @@ export interface IDriver {
   fullName: string
   licenseNumber: string
   phone?: string
-  vehicles: IVehicle[]
+  vehicles: { vehicle: IVehicle }[]
   createdAt: string
 }
 

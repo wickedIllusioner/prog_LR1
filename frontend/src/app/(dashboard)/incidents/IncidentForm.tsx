@@ -120,7 +120,10 @@ export function IncidentForm({
 	}
 
 	return (
-		<form onSubmit={handleSubmit} className='space-y-8 animate-in fade-in duration-500'>
+		<form
+			onSubmit={handleSubmit}
+			className='space-y-8 animate-in fade-in duration-500'
+		>
 			<div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
 				<div className='space-y-4'>
 					<div className='space-y-2'>
@@ -154,6 +157,7 @@ export function IncidentForm({
 							инцидента
 						</Label>
 						<Select
+              key={severity}
 							value={severity}
 							onValueChange={v => setSeverity(v as IncidentSeverity)}
 						>
@@ -200,108 +204,120 @@ export function IncidentForm({
 				</div>
 
 				<div className='grid gap-4'>
-					{involvedParties.map((party, index) => (
-						<Card
-							key={index}
-							className='relative overflow-hidden border-l-4 border-l-primary'
-						>
-							<CardContent className='p-4'>
-								<div className='grid grid-cols-1 md:grid-cols-3 gap-4 items-end'>
-									<div className='space-y-2'>
-										<Label className='text-xs flex items-center gap-1'>
-											<User className='size-3' /> Водитель
-										</Label>
-										<Select
-											key={`${isDriversLoading}-${party.driverId}`}
-											value={party.driverId}
-											onValueChange={v =>
-												updateParticipant(index, 'driverId', v)
-											}
-										>
-											<SelectTrigger>
-												<SelectValue
-													placeholder={
-														isDriversLoading
-															? 'Загрузка...'
-															: 'Выберите водителя'
-													}
-												/>
-											</SelectTrigger>
-											<SelectContent>
-												{driverOptions.map(opt => (
-													<SelectItem key={opt.value} value={opt.value}>
-														{opt.label}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
-									</div>
+					{involvedParties.map((party, index) => {
+						const currentDriverOption = driverOptions.find(
+							opt => opt.value === party.driverId
+						)
+						const availableVehicles = currentDriverOption?.vehicles || []
 
-									<div className='space-y-2'>
-										<Label className='text-xs flex items-center gap-1'>
-											<Car className='size-3' /> Транспорт
-										</Label>
-										<Select
-											key={`${isVehiclesLoading}-${party.vehicleId}`}
-											value={party.vehicleId}
-											onValueChange={v =>
-												updateParticipant(index, 'vehicleId', v)
-											}
-										>
-											<SelectTrigger>
-												<SelectValue
-													placeholder={
-														isVehiclesLoading ? 'Загрузка...' : 'Выберите авто'
-													}
-												/>
-											</SelectTrigger>
-											<SelectContent>
-												{vehicleOptions.map(opt => (
-													<SelectItem key={opt.value} value={opt.value}>
-														{opt.label}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
-									</div>
-
-									<div className='flex items-center gap-2'>
-										<div className='flex-1 space-y-2'>
-											<Label className='text-xs'>Роль</Label>
+						return (
+							<Card
+								key={index}
+								className='relative overflow-hidden border-l-4 border-l-primary'
+							>
+								<CardContent className='p-4'>
+									<div className='grid grid-cols-1 md:grid-cols-3 gap-4 items-end'>
+										<div className='space-y-2'>
+											<Label className='text-xs flex items-center gap-1'>
+												<User className='size-3' /> Водитель
+											</Label>
 											<Select
-												key={`${index}-${party.role}`}
-												value={party.role ? party.role.toString() : ''}
-												onValueChange={v => updateParticipant(index, 'role', v)}
+												key={`${isDriversLoading}-${party.driverId}`}
+												value={party.driverId}
+												onValueChange={v =>
+													updateParticipant(index, 'driverId', v)
+												}
 											>
 												<SelectTrigger>
-													<SelectValue />
+													<SelectValue
+														placeholder={
+															isDriversLoading
+																? 'Загрузка...'
+																: 'Выберите водителя'
+														}
+													/>
 												</SelectTrigger>
 												<SelectContent>
-													<SelectItem value={ParticipantRole.CULPRIT}>
-														Виновник
-													</SelectItem>
-													<SelectItem value={ParticipantRole.VICTIM}>
-														Пострадавший
-													</SelectItem>
+													{driverOptions.map(opt => (
+														<SelectItem key={opt.value} value={opt.value}>
+															{opt.label}
+														</SelectItem>
+													))}
 												</SelectContent>
 											</Select>
 										</div>
-										{involvedParties.length > 1 && (
-											<Button
-												type='button'
-												variant='ghost'
-												size='icon'
-												onClick={() => removeParticipant(index)}
-												className='text-destructive hover:text-destructive hover:bg-destructive/10'
+
+										<div className='space-y-2'>
+											<Label className='text-xs flex items-center gap-1'>
+												<Car className='size-3' /> Транспорт
+											</Label>
+											<Select
+												key={`${isVehiclesLoading}-${party.vehicleId}`}
+												value={party.vehicleId}
+												onValueChange={v =>
+													updateParticipant(index, 'vehicleId', v)
+												}
+												disabled={!party.driverId}
 											>
-												<Trash2 className='size-4' />
-											</Button>
-										)}
+												<SelectTrigger>
+													<SelectValue
+														placeholder={
+															isVehiclesLoading
+																? 'Загрузка...'
+																: 'Выберите авто'
+														}
+													/>
+												</SelectTrigger>
+												<SelectContent>
+													{availableVehicles.map(v => (
+														<SelectItem key={v.id} value={v.id}>
+															{v.mark} {v.model} ({v.licensePlate})
+														</SelectItem>
+													))}
+												</SelectContent>
+											</Select>
+										</div>
+
+										<div className='flex items-center gap-2'>
+											<div className='flex-1 space-y-2'>
+												<Label className='text-xs'>Роль</Label>
+												<Select
+													key={`${index}-${party.role}`}
+													value={party.role ? party.role.toString() : ''}
+													onValueChange={v =>
+														updateParticipant(index, 'role', v)
+													}
+												>
+													<SelectTrigger>
+														<SelectValue />
+													</SelectTrigger>
+													<SelectContent>
+														<SelectItem value={ParticipantRole.CULPRIT}>
+															Виновник
+														</SelectItem>
+														<SelectItem value={ParticipantRole.VICTIM}>
+															Пострадавший
+														</SelectItem>
+													</SelectContent>
+												</Select>
+											</div>
+											{involvedParties.length > 1 && (
+												<Button
+													type='button'
+													variant='ghost'
+													size='icon'
+													onClick={() => removeParticipant(index)}
+													className='text-destructive hover:text-destructive hover:bg-destructive/10'
+												>
+													<Trash2 className='size-4' />
+												</Button>
+											)}
+										</div>
 									</div>
-								</div>
-							</CardContent>
-						</Card>
-					))}
+								</CardContent>
+							</Card>
+						)
+					})}
 				</div>
 			</div>
 

@@ -56,6 +56,11 @@ export class DriversService {
         id: true,
         fullName: true,
         licenseNumber: true,
+        vehicles: {
+          select: {
+            vehicle: true,
+          },
+        },
       },
     });
   }

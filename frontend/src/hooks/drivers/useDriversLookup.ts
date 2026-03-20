@@ -16,7 +16,8 @@ export function useDriversLookup() {
 			options:
 				drivers?.map(d => ({
 					label: d.fullName,
-					value: d.id
+					value: d.id,
+          vehicles: d.vehicles?.map((v: any) => v.vehicle) || []
 				})) || [],
 			isLoading
 		}),

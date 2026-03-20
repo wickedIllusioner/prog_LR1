@@ -11,7 +11,13 @@ export class IncidentsService {
 
     return this.prismaService.incident.findMany({
       orderBy: { createdAt: 'desc' },
-      select: { id: true, date: true, location: true, description: true },
+      select: {
+        id: true,
+        date: true,
+        location: true,
+        description: true,
+        severity: true,
+      },
     });
   }
 
