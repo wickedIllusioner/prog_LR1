@@ -20,6 +20,7 @@ import {
 	IncidentSeverity
 } from '@/src/types/incident.interface'
 import { ParticipantRole } from '@/src/types/involved-party.interface'
+import { IVehicle } from '@/src/types/vehicle.interface'
 import {
 	AlertTriangle,
 	Calendar as CalendarIcon,
@@ -269,7 +270,7 @@ export function IncidentForm({
 													/>
 												</SelectTrigger>
 												<SelectContent>
-													{availableVehicles.map(v => (
+													{availableVehicles.map((v: IVehicle) => (
 														<SelectItem key={v.id} value={v.id}>
 															{v.mark} {v.model} ({v.licensePlate})
 														</SelectItem>

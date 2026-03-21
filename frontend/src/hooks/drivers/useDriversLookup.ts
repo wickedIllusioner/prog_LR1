@@ -14,7 +14,7 @@ export function useDriversLookup() {
 	return useMemo(
 		() => ({
 			options:
-				drivers?.map(d => ({
+				drivers?.map((d: any) => ({
 					label: d.fullName,
 					value: d.id,
           vehicles: d.vehicles?.map((v: any) => v.vehicle) || []

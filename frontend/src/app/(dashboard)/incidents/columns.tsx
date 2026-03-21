@@ -36,7 +36,7 @@ const ActionCell = ({ incidentId }: { incidentId: string }) => {
 				isOpen={isConfirmOpen}
 				onClose={() => setIsConfirmOpen(false)}
 				onConfirm={() => deleteIncident(incidentId)}
-				loading={isLoadingDelete}
+				isLoading={isLoadingDelete}
 				title='Удалить инцидент?'
 				description='Это действие необратимо. Запись об инциденте и связи с участниками будут удалены из базы данных.'
 			/>

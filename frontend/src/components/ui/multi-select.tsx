@@ -45,7 +45,7 @@ export function MultiSelect({
 
 	return (
 		<Popover>
-			<PopoverTrigger asChild>
+			<PopoverTrigger>
 				<div className='flex min-h-10 w-full flex-wrap gap-1 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background'>
 					{selected.length > 0 ? (
 						selected.map(val => (
