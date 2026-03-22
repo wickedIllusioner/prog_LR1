@@ -7,6 +7,8 @@ export default defineConfig({
     path: 'prisma/migrations',
   },
   datasource: {
-    url: process.env.DATABASE_URL,
+    url:
+      process.env.DATABASE_URL ||
+      'postgresql://postgres:postgres@db:5432/auto-incident?schema=public',
   },
 });
