@@ -53,14 +53,14 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.prod
       args:
-        - NEXT_PUBLIC_API_URL=http://${SERVER_DOMAIN}:${SERVER_PORT}
+        - NEXT_PUBLIC_API_URL=${SERVER_URL}
     container_name: auto-incident-frontend
     restart: always
     env_file:
       - .env
     environment:
       - PORT=${CLIENT_PORT}
-      - NEXT_PUBLIC_API_URL=http://${SERVER_DOMAIN}:${SERVER_PORT}
+      - NEXT_PUBLIC_API_URL=${SERVER_URL}
     ports:
       - ${CLIENT_PORT}:${CLIENT_PORT}
     depends_on:

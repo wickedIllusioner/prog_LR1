@@ -26,6 +26,13 @@ export class StatisticsService {
         by: ['driverId'],
         _count: { incidentId: true },
         orderBy: { _count: { incidentId: 'desc' } },
+        having: {
+          incidentId: {
+            _count: {
+              gt: 0,
+            },
+          },
+        },
         take: 5,
       }),
     ]);
