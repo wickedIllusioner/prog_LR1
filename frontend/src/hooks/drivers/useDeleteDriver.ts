@@ -5,6 +5,7 @@ import { driverService } from '@/src/services/driver.service'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useMemo } from 'react'
+import toast from 'react-hot-toast'
 
 export const useDeleteDriver = () => {
 	const router = useRouter()
@@ -16,6 +17,12 @@ export const useDeleteDriver = () => {
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get drivers'] })
 			router.push(PUBLIC_URL.drivers())
+		},
+		onError(error: any) {
+			const message =
+				error.response?.data?.message ||
+				'Ошибка. Убедитесь, что к водителю не привязан транспорт'
+			toast.error(message)
 		}
 	})
 

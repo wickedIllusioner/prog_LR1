@@ -192,7 +192,7 @@ export function IncidentForm({
 
 			<div className='space-y-4'>
 				<div className='flex items-center justify-between'>
-					<Label className='text-lg font-semibold'>Участники ДТП</Label>
+					<Label className='text-lg font-semibold'>Участники инцидента</Label>
 					<Button
 						type='button'
 						variant='outline'

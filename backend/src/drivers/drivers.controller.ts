@@ -5,7 +5,6 @@ import {
   Get,
   HttpCode,
   Param,
-  Patch,
   Post,
   Put,
   Query,

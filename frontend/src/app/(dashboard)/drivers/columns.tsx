@@ -44,6 +44,12 @@ const ActionCell = ({ driver }: { driver: IDriver }) => {
 							Копировать ID
 						</DropdownMenuItem>
 
+            <Link href={PUBLIC_URL.drivers(driver.id)}>
+              <DropdownMenuItem className='cursor-pointer'>
+                Сведения
+              </DropdownMenuItem>
+            </Link>
+
 						<Link href={PUBLIC_URL.driverEdit(driver.id)}>
 							<DropdownMenuItem className='cursor-pointer'>
 								Редактировать

@@ -8,7 +8,7 @@ export default function CreateIncidentPage() {
 
 	return (
 		<div className='p-6 max-w-5xl mx-auto'>
-			<h2 className='text-3xl font-bold mb-6'>Регистрация нового ДТП</h2>
+			<h2 className='text-3xl font-bold mb-6'>Регистрация нового инцидента</h2>
 			<IncidentForm onSubmit={createIncident} isLoading={isLoadingCreate} />
 		</div>
 	)

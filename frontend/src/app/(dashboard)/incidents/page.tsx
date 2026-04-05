@@ -28,7 +28,7 @@ export default function IncidentsPage() {
 				</div>
 				<Link href={PUBLIC_URL.incidentsCreate()}>
 					<Button className='gap-2 shadow-md bg-destructive hover:bg-destructive/90 text-white'>
-						<Plus className='size-4' /> Сообщить о ДТП
+						<Plus className='size-4' /> Сообщить об инциденте
 					</Button>
 				</Link>
 			</div>

@@ -30,7 +30,7 @@ const TopOffendersCard = ({ data }: TopOffendersCardProps) => {
 								</div>
 								<div className='flex items-center gap-2'>
 									<span className='text-xl font-bold text-destructive'>{offender.count}</span>
-									<span className='text-xs text-muted-foreground'>ДТП</span>
+									<span className='text-xs text-muted-foreground'>Инцидент</span>
 								</div>
 							</div>
 						))

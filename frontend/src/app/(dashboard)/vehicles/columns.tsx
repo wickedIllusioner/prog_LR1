@@ -42,6 +42,12 @@ const ActionCell = ({ vehicle }: { vehicle: IVehicle }) => {
 							Копировать ID
 						</DropdownMenuItem>
 
+						<Link href={PUBLIC_URL.vehicles(vehicle.id)}>
+							<DropdownMenuItem className='cursor-pointer'>
+								Сведения
+							</DropdownMenuItem>
+						</Link>
+
 						<Link href={PUBLIC_URL.vehicleEdit(vehicle.id)}>
 							<DropdownMenuItem className='cursor-pointer'>
 								Редактировать

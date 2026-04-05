@@ -19,7 +19,7 @@ export const useDeleteVehicle = () => {
       router.push(PUBLIC_URL.vehicles())
 		},
     onError(error: any) {
-      const message = error.response?.data?.message || 'Произошла ошибка при удалении'
+      const message = error.response?.data?.message || 'Ошибка. Убедитесь, что к транспорту не привязаны водители'
       toast.error(message)
     }
 	})

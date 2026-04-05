@@ -17,11 +17,8 @@ import { IIncident, IncidentSeverity } from '@/src/types/incident.interface'
 import { ColumnDef } from '@tanstack/react-table'
 import {
 	Calendar,
-	Copy,
-	Edit2,
 	MapPin,
 	MoreHorizontal,
-	Trash2
 } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
@@ -56,6 +53,12 @@ const ActionCell = ({ incidentId }: { incidentId: string }) => {
 						>
 							Копировать ID
 						</DropdownMenuItem>
+
+						<Link href={PUBLIC_URL.incidents(incidentId)}>
+							<DropdownMenuItem className='cursor-pointer'>
+								Сведения
+							</DropdownMenuItem>
+						</Link>
 
 						<Link href={PUBLIC_URL.incidentEdit(incidentId)}>
 							<DropdownMenuItem className='gap-2'>

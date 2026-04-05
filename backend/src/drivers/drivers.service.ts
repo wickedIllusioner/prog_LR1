@@ -1,12 +1,10 @@
 import {
   BadRequestException,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { DriverDto } from './dto/driver.dto';
-import { VehicleAssignment } from '@prisma/client';
 
 @Injectable()
 export class DriversService {
