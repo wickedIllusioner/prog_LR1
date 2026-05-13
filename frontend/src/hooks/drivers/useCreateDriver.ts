@@ -2,10 +2,11 @@
 
 import { PUBLIC_URL } from '@/src/config/url.config'
 import { driverService } from '@/src/services/driver.service'
-import { IDriver, IDriverInput } from '@/src/types/driver.interface'
+import { IDriverInput } from '@/src/types/driver.interface'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useMemo } from 'react'
+import toast from 'react-hot-toast'
 
 export function useCreateDriver() {
 	const router = useRouter()
@@ -19,7 +20,11 @@ export function useCreateDriver() {
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get drivers'] })
 			queryClient.invalidateQueries({queryKey: ['get drivers lookup']})
+			toast.success('Водитель успешно создан')
 			router.push(PUBLIC_URL.drivers())
+		},
+		onError(error: string) {
+			toast.error(error)
 		}
 	})
 

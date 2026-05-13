@@ -19,8 +19,11 @@ export function useCreateVehicle() {
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get vehicles'] })
 			queryClient.invalidateQueries({ queryKey: ['get vehicles lookup'] })
-      toast.success('Операция создания прошла успешно')
+			toast.success('Транспортное средство успешно зарегистрировано')
 			router.push(PUBLIC_URL.vehicles())
+		},
+		onError(error: string) {
+			toast.error(error)
 		}
 	})
 

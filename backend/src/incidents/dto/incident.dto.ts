@@ -3,6 +3,7 @@ import {
   IsArray,
   IsDateString,
   IsEnum,
+  IsNotEmpty,
   IsOptional,
   IsString,
   ValidateNested,
@@ -16,9 +17,11 @@ export class IncidentDto {
     {},
     { message: 'Необходимо ввести корректную дату и время инцидента' },
   )
+  @IsNotEmpty({ message: 'Укажите время и дату инцидента' })
   date: string;
 
   @IsString({ message: 'Местоположение инцидента должно быть строкой' })
+  @IsNotEmpty({ message: 'Укажите местоположение инцидента' })
   location: string;
 
   @IsOptional()
@@ -28,13 +31,14 @@ export class IncidentDto {
   @IsEnum(EnumIncidentSeverity, {
     message: 'Некорреткный уровень серьезности инцидента',
   })
+  @IsNotEmpty({ message: 'Укажите уровень серьезности инцидента' })
   severity: EnumIncidentSeverity;
 
-  @IsArray({ message: 'Список участников инцидента должен быть массивом' })
+  @ValidateNested({ each: true })
+  @Type(() => InvolvedPartyDto)
   @ArrayMinSize(1, {
     message: 'Инцидент должен содержать хотя бы одного участника',
   })
-  @ValidateNested({ each: true })
-  @Type(() => InvolvedPartyDto)
+  @IsArray({ message: 'Список участников инцидента должен быть массивом' })
   involvedParties: InvolvedPartyDto[];
 }

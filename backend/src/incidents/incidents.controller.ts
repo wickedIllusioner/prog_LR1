@@ -8,8 +8,6 @@ import {
   Post,
   Put,
   Query,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import { IncidentsService } from './incidents.service';
 import { IncidentDto } from './dto/incident.dto';
@@ -32,7 +30,6 @@ export class IncidentsController {
     return this.incidentsService.getById(id);
   }
 
-  @UsePipes(new ValidationPipe())
   @HttpCode(200)
   @Post()
   async createIncident(@Body() dto: IncidentDto) {

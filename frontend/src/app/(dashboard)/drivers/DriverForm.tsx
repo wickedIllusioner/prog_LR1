@@ -64,7 +64,6 @@ export function DriverForm({
 						value={fullName}
 						onChange={e => setFullName(e.target.value)}
 						placeholder='Иванов Иван Иванович'
-						required
 					/>
 				</div>
 
@@ -76,7 +75,6 @@ export function DriverForm({
 						value={licenseNumber}
 						onChange={e => setLicenseNumber(e.target.value)}
 						placeholder='77 15 123456'
-						required
 					/>
 				</div>
 

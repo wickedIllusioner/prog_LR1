@@ -6,6 +6,7 @@ import { IIncidentInput } from '@/src/types/incident.interface'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useParams, useRouter } from 'next/navigation'
 import { useMemo } from 'react'
+import toast from 'react-hot-toast'
 
 export const useUpdateIncident = () => {
 	const params = useParams<{ id: string }>()
@@ -26,7 +27,11 @@ export const useUpdateIncident = () => {
     },
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get incidents'] })
+			toast.success('Данные инцидента обновлены')
 			router.push(PUBLIC_URL.incidents())
+		},
+		onError(error: string) {
+			toast.error(error)
 		}
 	})
 

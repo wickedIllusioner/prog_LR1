@@ -6,6 +6,7 @@ import { IIncidentInput } from '@/src/types/incident.interface'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useMemo } from 'react'
+import toast from 'react-hot-toast'
 
 export function useCreateIncident() {
 	const router = useRouter()
@@ -16,7 +17,11 @@ export function useCreateIncident() {
 		mutationFn: (data: IIncidentInput) => incidentService.create(data),
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get incidents'] })
+			toast.success('Инцидент успешно создан')
 			router.push(PUBLIC_URL.incidents())
+		},
+		onError(error: string) {
+			toast.error(error)
 		}
 	})
 

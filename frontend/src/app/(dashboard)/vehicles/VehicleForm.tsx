@@ -57,7 +57,6 @@ export function VehicleForm({
 						value={mark}
 						onChange={e => setMark(e.target.value)}
 						placeholder='Например, Toyota'
-						required
 					/>
 				</div>
 
@@ -69,7 +68,6 @@ export function VehicleForm({
 						value={model}
 						onChange={e => setModel(e.target.value)}
 						placeholder='Например, Camry'
-						required
 					/>
 				</div>
 
@@ -80,8 +78,7 @@ export function VehicleForm({
 					<Input
 						value={licensePlate}
 						onChange={e => setLicensePlate(e.target.value)}
-						placeholder='А 001 АА 77'
-						required
+						placeholder='А001АА77'
 					/>
 				</div>
 

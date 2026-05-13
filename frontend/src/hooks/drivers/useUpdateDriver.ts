@@ -6,6 +6,7 @@ import { IDriverInput } from '@/src/types/driver.interface'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useParams, useRouter } from 'next/navigation'
 import { useMemo } from 'react'
+import toast from 'react-hot-toast'
 
 export const useUpdateDriver = () => {
 	const params = useParams<{ id: string }>()
@@ -23,8 +24,12 @@ export const useUpdateDriver = () => {
 		mutationFn: (data: IDriverInput) => driverService.update(params.id!, data),
 		onSuccess() {
 			queryClient.invalidateQueries({ queryKey: ['get drivers'] })
+			toast.success('Данные водителя обновлены')
 			router.push(PUBLIC_URL.drivers())
 		},
+		onError(error: string) {
+			toast.error(error)
+		}
 	})
 
 	return useMemo(

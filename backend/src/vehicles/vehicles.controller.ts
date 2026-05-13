@@ -8,8 +8,6 @@ import {
   Post,
   Put,
   Query,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import { VehiclesService } from './vehicles.service';
 import { VehicleDto } from './dto/vehicle.dto';
@@ -37,7 +35,6 @@ export class VehiclesController {
     return this.vehiclesService.getById(id);
   }
 
-  @UsePipes(new ValidationPipe())
   @HttpCode(200)
   @Post()
   async createVehicle(@Body() dto: VehicleDto) {

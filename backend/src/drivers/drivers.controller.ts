@@ -8,8 +8,6 @@ import {
   Post,
   Put,
   Query,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import { DriversService } from './drivers.service';
 import { DriverDto } from './dto/driver.dto';
@@ -37,7 +35,6 @@ export class DriversController {
     return this.driversService.getById(id);
   }
 
-  @UsePipes(new ValidationPipe())
   @HttpCode(200)
   @Post()
   async createDriver(@Body() dto: DriverDto) {

@@ -111,8 +111,11 @@ export function IncidentForm({
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault()
+
+    const formattedDate = date ? new Date(date).toISOString() : ''
+
 		onSubmit({
-			date: new Date(date).toISOString(),
+			date: formattedDate,
 			location,
 			description,
 			severity,
@@ -136,7 +139,6 @@ export function IncidentForm({
 							type='datetime-local'
 							value={date}
 							onChange={e => setDate(e.target.value)}
-							required
 						/>
 					</div>
 
@@ -148,7 +150,6 @@ export function IncidentForm({
 							value={location}
 							onChange={e => setLocation(e.target.value)}
 							placeholder='г. Москва, ул. Ленина, д. 1'
-							required
 						/>
 					</div>
 
