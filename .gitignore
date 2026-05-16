@@ -58,3 +58,5 @@ frontend/.gitignore
 .vercel
 
 docker-compose.db.yaml
+
+*.bat

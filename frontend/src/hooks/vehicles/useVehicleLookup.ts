@@ -8,7 +8,7 @@ export function useVehiclesLookup() {
 	const { data: vehicles, isLoading } = useQuery({
 		queryKey: ['vehicles lookup'],
 		queryFn: () => vehicleService.getLookup(),
-		staleTime: 5 * 60 * 1000
+		staleTime: 60 * 1000
 	})
 
 	return useMemo(

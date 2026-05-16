@@ -1,10 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { IncidentDto } from './dto/incident.dto';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class IncidentsService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly mailerService: MailerService,
+  ) {}
 
   async getAll(searchTerm?: string, skip?: number, take?: number) {
     if (searchTerm) return this.getSearchTermFilter(searchTerm, skip, take);
@@ -120,6 +124,26 @@ export class IncidentsService {
 
   async create(dto: IncidentDto) {
     const { involvedParties, ...incidentData } = dto;
+
+    const targetEmail = 'veselovka47@gmail.com';
+
+    try {
+      await this.mailerService.sendMail({
+        to: targetEmail,
+        subject: `Новое ДТП: ${dto.location}`,
+        text: `Зарегистрировано новое ДТП.\nУровень серьезности: ${dto.severity}`,
+        html: `
+          <h3>Зарегистрировано новое ДТП</h3>
+          <p><strong>Уровень серьезности:</strong> ${dto.severity}</p>
+          <p><strong>Место:</strong> ${dto.location}</p>
+          <p><strong>Дата:</strong> ${new Date(dto.date).toLocaleString('ru-RU')}</p>
+          <p><strong>Описание:</strong> ${dto.description || 'Не указано'}</p>
+        `,
+      });
+      console.log(`Письмо отправлено на ${targetEmail}`);
+    } catch (error) {
+      console.error(`Ошибка при отправке письма: ${error}`);
+    }
 
     return this.prismaService.incident.create({
       data: {

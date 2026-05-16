@@ -14,6 +14,7 @@ import {
 import { Textarea } from '@/src/components/ui/textarea'
 import { useDriversLookup } from '@/src/hooks/drivers/useDriversLookup'
 import { useVehiclesLookup } from '@/src/hooks/vehicles/useVehicleLookup'
+import { yandexGeocoderService } from '@/src/services/yandex-geocoder.service'
 import {
 	IIncident,
 	IInvolvedPartyInput,
@@ -21,6 +22,8 @@ import {
 } from '@/src/types/incident.interface'
 import { ParticipantRole } from '@/src/types/involved-party.interface'
 import { IVehicle } from '@/src/types/vehicle.interface'
+import '@pbe/react-yandex-maps'
+import { Map, Placemark, YMaps } from '@pbe/react-yandex-maps'
 import {
 	AlertTriangle,
 	Calendar as CalendarIcon,
@@ -31,7 +34,7 @@ import {
 	Trash2,
 	User
 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 interface IncidentFormProps {
 	initialData?: IIncident | null
@@ -58,6 +61,10 @@ export function IncidentForm({
 	const [involvedParties, setInvolvedParties] = useState<IInvolvedPartyInput[]>(
 		[{ driverId: '', vehicleId: '', role: ParticipantRole.VICTIM }]
 	)
+
+	const mapRef = useRef<any>(null)
+	const [coords, setCoords] = useState([55.751574, 37.573856])
+	const [isMapLoaded, setIsMapLoaded] = useState(false)
 
 	useEffect(() => {
 		if (initialData) {
@@ -88,6 +95,40 @@ export function IncidentForm({
 		}
 	}, [initialData])
 
+	// Загрузка адреса при редактировании (Прямое геокодирование)
+	useEffect(() => {
+		const fetchCoords = async () => {
+			if (!initialData?.location) return
+
+			const newCoords = await yandexGeocoderService.getCoordsFromAddress(
+				initialData.location
+			)
+
+			if (newCoords) {
+				setCoords(newCoords)
+				if (mapRef.current) {
+					mapRef.current.setCenter(newCoords, 14)
+				}
+			}
+		}
+
+		if (isMapLoaded) {
+			fetchCoords()
+		}
+	}, [isMapLoaded, initialData?.location])
+
+	// Клик по карте (Обратное геокодирование)
+	const handleMapClick = async (e: any) => {
+		const clickedCoords = e.get('coords')
+		setCoords(clickedCoords)
+
+		const address =
+			await yandexGeocoderService.getAddressFromCoords(clickedCoords)
+		if (address) {
+			setLocation(address)
+		}
+	}
+
 	const addParticipant = () => {
 		setInvolvedParties([
 			...involvedParties,
@@ -112,7 +153,7 @@ export function IncidentForm({
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault()
 
-    const formattedDate = date ? new Date(date).toISOString() : ''
+		const formattedDate = date ? new Date(date).toISOString() : ''
 
 		onSubmit({
 			date: formattedDate,
@@ -151,6 +192,34 @@ export function IncidentForm({
 							onChange={e => setLocation(e.target.value)}
 							placeholder='г. Москва, ул. Ленина, д. 1'
 						/>
+
+						<div className='h-[250px] w-full rounded-md overflow-hidden border mt-2 relative'>
+							{!isMapLoaded && (
+								<div className='absolute inset-0 flex items-center justify-center bg-muted/30 z-10'>
+									<Loader2 className='size-6 animate-spin text-muted-foreground' />
+								</div>
+							)}
+							<YMaps
+								query={{
+									apikey: process.env.NEXT_PUBLIC_YANDEX_MAPS_API_KEY,
+									load: 'package.full'
+								}}
+							>
+								<Map
+									defaultState={{ center: [55.751574, 37.573856], zoom: 14 }}
+									instanceRef={ref => (mapRef.current = ref)}
+									width='100%'
+									height='100%'
+									onLoad={() => setIsMapLoaded(true)}
+									onClick={handleMapClick}
+								>
+									<Placemark
+										geometry={coords}
+										options={{ preset: 'islands#redDotIcon' }}
+									/>
+								</Map>
+							</YMaps>
+						</div>
 					</div>
 
 					<div className='space-y-2'>
@@ -159,7 +228,7 @@ export function IncidentForm({
 							инцидента
 						</Label>
 						<Select
-              key={severity}
+							key={severity}
 							value={severity}
 							onValueChange={v => setSeverity(v as IncidentSeverity)}
 						>

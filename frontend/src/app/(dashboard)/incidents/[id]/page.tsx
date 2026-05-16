@@ -11,17 +11,22 @@ import {
 import { PUBLIC_URL } from '@/src/config/url.config'
 import { useUpdateIncident } from '@/src/hooks/incidents/useUpdateIncident'
 import { ParticipantRole } from '@/src/types/involved-party.interface'
+import '@pbe/react-yandex-maps'
+import { Map, Placemark, YMaps } from '@pbe/react-yandex-maps'
 import {
 	AlertTriangle,
 	Calendar,
 	ChevronLeft,
 	Edit,
 	Info,
+	MapIcon,
 	MapPin,
 	Users
 } from 'lucide-react'
 import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
+import { useEffect, useRef, useState } from 'react'
+import { yandexGeocoderService } from '@/src/services/yandex-geocoder.service'
 
 const severityConfig: any = {
 	LOW: { label: 'Низкая', variant: 'outline' },
@@ -32,6 +37,31 @@ const severityConfig: any = {
 
 export default function IncidentViewPage() {
 	const { incident, isIncidentLoading } = useUpdateIncident()
+	const [coords, setCoords] = useState([55.751574, 37.573856])
+	const [isMapLoaded, setIsMapLoaded] = useState(false)
+
+	const mapRef = useRef<any>(null)
+
+	useEffect(() => {
+		const fetchCoords = async () => {
+			if (!incident?.location) return
+
+			const newCoords = await yandexGeocoderService.getCoordsFromAddress(
+				incident.location
+			)
+
+			if (newCoords) {
+				setCoords(newCoords)
+				if (mapRef.current) {
+					mapRef.current.setCenter(newCoords, 16)
+				}
+			}
+		}
+
+		if (isMapLoaded) {
+			fetchCoords()
+		}
+	}, [isMapLoaded, incident?.location])
 
 	if (isIncidentLoading) {
 		return (
@@ -119,6 +149,41 @@ export default function IncidentViewPage() {
 								{incident?.description || 'Описание отсутствует'}
 							</p>
 						</div>
+					</CardContent>
+				</Card>
+
+				{/* Яндекс Карты */}
+				<Card className='border-none shadow-md overflow-hidden'>
+					<CardHeader className='pb-3'>
+						<CardTitle className='text-lg flex items-center gap-2'>
+							<MapIcon className='size-5 text-red-500' /> Карта происшествия
+						</CardTitle>
+					</CardHeader>
+					<CardContent className='p-0 relative h-[300px]'>
+						{!isMapLoaded && (
+							<div className='absolute inset-0 flex items-center justify-center bg-muted/30 z-10'>
+								<Loader2 className='size-6 animate-spin text-muted-foreground' />
+							</div>
+						)}
+						<YMaps
+							query={{
+								apikey: process.env.NEXT_PUBLIC_YANDEX_MAPS_API_KEY,
+								load: 'package.full'
+							}}
+						>
+							<Map
+								defaultState={{ center: [55.751574, 37.573856], zoom: 16 }}
+								instanceRef={ref => (mapRef.current = ref)}
+								width='100%'
+								height='100%'
+								onLoad={() => setIsMapLoaded(true)}
+							>
+								<Placemark
+									geometry={coords}
+									options={{ preset: 'islands#redAutoIcon' }}
+								/>
+							</Map>
+						</YMaps>
 					</CardContent>
 				</Card>
 

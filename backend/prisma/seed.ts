@@ -2,10 +2,8 @@ import {
   PrismaClient,
   EnumIncidentSeverity,
   EnumPartyRole,
-  Driver,
-  Vehicle,
-  Incident,
 } from '@prisma/client';
+import type { Driver, Vehicle, Incident } from '@prisma/client';
 import { Pool } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
 
@@ -62,36 +60,186 @@ const patronymics = [
 const carBrands = [
   {
     mark: 'Toyota',
-    models: ['Camry', 'Corolla', 'RAV4', 'Land Cruiser', 'Hilux'],
+    models: [
+      'Camry',
+      'Corolla',
+      'RAV4',
+      'Land Cruiser',
+      'Hilux',
+      'Yaris',
+      'Avensis',
+      'Highlander',
+    ],
   },
-  { mark: 'Lada', models: ['Vesta', 'Granta', 'Niva', 'Largus', 'XRAY'] },
-  { mark: 'Kia', models: ['Rio', 'Sportage', 'K5', 'Sorento', 'Cerato'] },
+  {
+    mark: 'Lada',
+    models: [
+      'Vesta',
+      'Granta',
+      'Niva',
+      'Largus',
+      'XRAY',
+      'Priora',
+      'Kalina',
+      '2107',
+    ],
+  },
+  {
+    mark: 'Kia',
+    models: [
+      'Rio',
+      'Sportage',
+      'K5',
+      'Sorento',
+      'Cerato',
+      'Optima',
+      'Ceed',
+      'Stinger',
+    ],
+  },
   {
     mark: 'Hyundai',
-    models: ['Solaris', 'Creta', 'Tucson', 'Santa Fe', 'Elantra'],
+    models: [
+      'Solaris',
+      'Creta',
+      'Tucson',
+      'Santa Fe',
+      'Elantra',
+      'Sonata',
+      'i30',
+      'Palisade',
+    ],
   },
-  { mark: 'BMW', models: ['X5', '3 Series', '5 Series', 'X3', 'X7'] },
+  {
+    mark: 'BMW',
+    models: ['X5', '3 Series', '5 Series', 'X3', 'X7', 'X1', '7 Series', 'M3'],
+  },
   {
     mark: 'Mercedes-Benz',
-    models: ['E-Class', 'C-Class', 'GLC', 'GLE', 'S-Class'],
+    models: [
+      'E-Class',
+      'C-Class',
+      'GLC',
+      'GLE',
+      'S-Class',
+      'GLA',
+      'A-Class',
+      'G-Class',
+    ],
   },
-  { mark: 'Skoda', models: ['Octavia', 'Rapid', 'Kodiaq', 'Superb', 'Karoq'] },
+  {
+    mark: 'Skoda',
+    models: ['Octavia', 'Rapid', 'Kodiaq', 'Superb', 'Karoq', 'Fabia', 'Kamiq'],
+  },
+  {
+    mark: 'Volkswagen',
+    models: ['Polo', 'Passat', 'Tiguan', 'Tuareg', 'Jetta', 'Golf', 'Multivan'],
+  },
+  {
+    mark: 'Nissan',
+    models: [
+      'Qashqai',
+      'X-Trail',
+      'Almera',
+      'Teana',
+      'Juke',
+      'Murano',
+      'Pathfinder',
+    ],
+  },
+  {
+    mark: 'Renault',
+    models: [
+      'Logan',
+      'Sandero',
+      'Duster',
+      'Kaptur',
+      'Megane',
+      'Fluence',
+      'Arkana',
+    ],
+  },
+  {
+    mark: 'Ford',
+    models: ['Focus', 'Mondeo', 'Kuga', 'Explorer', 'Fusion', 'Fiesta'],
+  },
 ];
 
 const streets = [
-  'Ленина',
-  'Мира',
-  'Пушкина',
-  'Гагарина',
-  'Кирова',
-  'Садовая',
-  'Советская',
-  'Московская',
-  'Чехова',
-  'Горького',
-  'Строителей',
-  'Южная',
+  'Тверская',
+  'Арбат',
+  'Пятницкая',
+  'Мясницкая',
+  'Покровка',
+  'Маросейка',
+  'Большая Дмитровка',
+  'Малая Дмитровка',
+  'Никольская',
+  'Варварка',
+  'Ильинка',
+  'Рождественка',
+  'Сретенка',
+  'Лубянка',
+  'Кузнецкий Мост',
+  'Неглинная',
+  'Петровка',
+  'Каретный Ряд',
+  'Цветной бульвар',
+  'Чистопрудный бульвар',
+  'Покровский бульвар',
+  'Яузский бульвар',
+  'Страстной бульвар',
+  'Новинский бульвар',
+  'Тверской бульвар',
+  'Никитский бульвар',
+  'Гоголевский бульвар',
+  'Остоженка',
+  'Пречистенка',
+  'Волхонка',
+  'Знаменка',
+  'Воздвиженка',
+  'Новый Арбат',
+  'Кутузовский проспект',
+  'Ленинградский проспект',
+  'Комсомольский проспект',
+  'Вернадского проспект',
+  'Рязанский проспект',
+  'Волгоградский проспект',
+  'Ленинский проспект',
+  'Мичуринский проспект',
+  'Проспект Мира',
+  'Щёлковское шоссе',
+  'Энтузиастов шоссе',
+  'Варшавское шоссе',
+  'Каширское шоссе',
+  'Дмитровское шоссе',
+  'Алтуфьевское шоссе',
+  'Ярославское шоссе',
+  'Рублёвское шоссе',
+  'Можайское шоссе',
+  'Киевское шоссе',
+  'Пятницкое шоссе',
+  'Симферопольское шоссе',
+  'Академика Сахарова',
+  'Большая Ордынка',
+  'Малая Ордынка',
+  'Большая Полянка',
+  'Малая Полянка',
+  'Полянка',
+  'Якиманка',
+  'Крымский Вал',
+  'Зубовский бульвар',
 ];
+// const realMoscowAddresses = [
+//   'г. Москва, ул. Тверская, д. 7',
+//   'г. Москва, Новый Арбат, д. 21',
+//   'г. Москва, Кутузовский проспект, д. 2',
+//   'г. Москва, Ленинградский проспект, д. 31',
+//   'г. Москва, ул. Петровка, д. 38',
+//   'г. Москва, ул. Охотный Ряд, д. 2',
+//   'г. Москва, проспект Мира, д. 119',
+//   'г. Москва, ул. Арбат, д. 54',
+// ];
 const incidentDescriptions = [
   'Несоблюдение безопасной дистанции при торможении.',
   'Столкновение на перекрестке из-за проезда на запрещающий сигнал светофора.',
@@ -103,6 +251,18 @@ const incidentDescriptions = [
   'Потеря управления на обледенелом участке дороги.',
   'Превышение скорости, повлекшее занос автомобиля.',
   'Задел припаркованный автомобиль во дворе.',
+  'Наезд на пешехода на нерегулируемом переходе.',
+  'ДТП при обгоне с выездом на встречную полосу.',
+  'Столкновение при повороте налево без уступания дороги.',
+  'Наезд на стоящее транспортное средство.',
+  'Падение груза из кузова автомобиля.',
+  'ДТП при движении задним ходом на парковке ТЦ.',
+  'Столкновение с отбойником на трассе.',
+  'Повреждение автомобиля упавшим деревом.',
+  'Наезд на яму/выбоину с повреждением подвески.',
+  'Лобовое столкновение при выезде на встречную полосу.',
+  'ДТП при обгоне трамвая.',
+  'Столкновение на кольцевом перекрестке.',
 ];
 
 const allowedPlateLetters = [
@@ -118,6 +278,23 @@ const allowedPlateLetters = [
   'Т',
   'У',
   'Х',
+];
+const regions = [
+  '77',
+  '97',
+  '99',
+  '177',
+  '197',
+  '199',
+  '777',
+  '50',
+  '90',
+  '150',
+  '190',
+  '750',
+  '790',
+  '250',
+  '550',
 ];
 
 // --- ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ---
@@ -199,6 +376,25 @@ async function main() {
         vehicleId: vehicles[i].id,
       },
     });
+  }
+
+  for (let i = 0; i < 5; i++) {
+    const driverIdx = getRandomInt(0, drivers.length - 1);
+    const vehicleIdx = getRandomInt(0, vehicles.length - 1);
+    const existing = await prisma.vehicleAssignment.findFirst({
+      where: {
+        driverId: drivers[driverIdx].id,
+        vehicleId: vehicles[vehicleIdx].id,
+      },
+    });
+    if (!existing && driverIdx !== vehicleIdx % drivers.length) {
+      await prisma.vehicleAssignment.create({
+        data: {
+          driverId: drivers[driverIdx].id,
+          vehicleId: vehicles[vehicleIdx].id,
+        },
+      });
+    }
   }
   console.log('Водители привязаны к транспорту');
 

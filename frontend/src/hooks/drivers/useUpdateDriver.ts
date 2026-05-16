@@ -14,7 +14,7 @@ export const useUpdateDriver = () => {
 	const queryClient = useQueryClient()
 
 	const { data: driver, isLoading: isDriverLoading } = useQuery({
-		queryKey: ['get driver', params.id],
+		queryKey: ['get drivers', params.id],
 		queryFn: () => driverService.getById(params.id),
 		enabled: !!params.id
 	})
