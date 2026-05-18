@@ -21,6 +21,7 @@ jobs:
       - name: Build and Push Backend
         uses: docker/build-push-action@v4
         with:
+          driver: docker-container
           context: ./backend
           file: ./backend/Dockerfile.prod
           push: true
@@ -31,6 +32,7 @@ jobs:
       - name: Build and Push Frontend
         uses: docker/build-push-action@v4
         with:
+          driver: docker-container
           context: ./frontend
           file: ./frontend/Dockerfile.prod
           push: true
