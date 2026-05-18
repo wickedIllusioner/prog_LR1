@@ -12,6 +12,7 @@ import {
 } from '@/src/components/ui/dropdown-menu'
 import { ConfirmModal } from '@/src/components/ui/modals/ConfirmModal'
 import { PUBLIC_URL } from '@/src/config/url.config'
+import { useRole } from '@/src/hooks/auth/useRole'
 import { useDeleteVehicle } from '@/src/hooks/vehicles/useDeleteVehicle'
 import { IVehicle } from '@/src/types/vehicle.interface'
 import { ColumnDef } from '@tanstack/react-table'
@@ -20,6 +21,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 
 const ActionCell = ({ vehicle }: { vehicle: IVehicle }) => {
+	const role = useRole()
 	const [isOpen, setIsOpen] = useState(false)
 	const { deleteVehicle, isLoadingDelete } = useDeleteVehicle()
 
@@ -48,18 +50,23 @@ const ActionCell = ({ vehicle }: { vehicle: IVehicle }) => {
 							</DropdownMenuItem>
 						</Link>
 
-						<Link href={PUBLIC_URL.vehicleEdit(vehicle.id)}>
-							<DropdownMenuItem className='cursor-pointer'>
-								Редактировать
-							</DropdownMenuItem>
-						</Link>
+						{role === 'ADMIN' && (
+							<Link href={PUBLIC_URL.vehicleEdit(vehicle.id)}>
+								<DropdownMenuItem className='cursor-pointer'>
+									Редактировать
+								</DropdownMenuItem>
+							</Link>
+						)}
 
-						<DropdownMenuItem
-							className='text-destructive focus:text-destructive cursor-pointer'
-							onClick={() => setIsOpen(true)}
-						>
-							Удалить
-						</DropdownMenuItem>
+						{role === 'ADMIN' && (
+							<DropdownMenuItem
+								className='text-destructive focus:text-destructive cursor-pointer'
+								onClick={() => setIsOpen(true)}
+							>
+								Удалить
+							</DropdownMenuItem>
+						)}
+            
 					</DropdownMenuGroup>
 				</DropdownMenuContent>
 			</DropdownMenu>

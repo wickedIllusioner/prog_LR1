@@ -4,12 +4,14 @@ import { incidentColumns } from './columns'
 import { Button } from '@/src/components/ui/button'
 import { DataTable } from '@/src/components/ui/data-table'
 import { PUBLIC_URL } from '@/src/config/url.config'
+import { useRole } from '@/src/hooks/auth/useRole'
 import { useGetIncidents } from '@/src/hooks/incidents/useGetIncidents'
 import { AlertOctagon, Plus } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 
 export default function IncidentsPage() {
+	const role = useRole()
 	const [searchTerm, setSearchTerm] = useState('')
 
 	const { incidents, isLoading } = useGetIncidents(searchTerm)
@@ -26,11 +28,18 @@ export default function IncidentsPage() {
 						Регистрация и мониторинг происшествий на дорогах
 					</p>
 				</div>
-				<Link href={PUBLIC_URL.incidentsCreate()}>
+				{role === 'ADMIN' && (
+					<Link href={PUBLIC_URL.incidentsCreate()}>
+						<Button className='gap-2 shadow-md bg-destructive hover:bg-destructive/90 text-white'>
+							<Plus className='size-4' /> Сообщить об инциденте
+						</Button>
+					</Link>
+				)}
+				{/* <Link href={PUBLIC_URL.incidentsCreate()}>
 					<Button className='gap-2 shadow-md bg-destructive hover:bg-destructive/90 text-white'>
 						<Plus className='size-4' /> Сообщить об инциденте
 					</Button>
-				</Link>
+				</Link> */}
 			</div>
 
 			{isLoading ? (

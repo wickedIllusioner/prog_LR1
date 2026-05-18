@@ -56,7 +56,9 @@ jobs:
           port: ${{ secrets.VPS_PORT }}
           script: |
             cd /opt/app
+            docker system prune -a -f --volumes=false
             docker compose pull
             docker compose up -d --remove-orphans
+            docker builder prune -f
             sleep 20
             docker compose ps

@@ -1,14 +1,16 @@
 'use client'
 
-import { DataTable } from '@/src/components/ui/data-table'
 import { vehicleColumns } from './columns'
-import { useGetVehicles } from '@/src/hooks/vehicles/useGetVehicles' // Твой хук
-import { Plus, Truck } from 'lucide-react'
 import { Button } from '@/src/components/ui/button'
-import Link from 'next/link'
+import { DataTable } from '@/src/components/ui/data-table'
 import { PUBLIC_URL } from '@/src/config/url.config'
+import { useRole } from '@/src/hooks/auth/useRole'
+import { useGetVehicles } from '@/src/hooks/vehicles/useGetVehicles'
+import { Plus } from 'lucide-react'
+import Link from 'next/link'
 
 export default function VehiclesPage() {
+	const role = useRole()
 	const { vehicles, isLoading } = useGetVehicles()
 
 	return (
@@ -20,21 +22,28 @@ export default function VehiclesPage() {
 						Учет транспортных средств и их технических данных
 					</p>
 				</div>
-        <Link href={PUBLIC_URL.vehicleCreate()}>
+				{role === 'ADMIN' && (
+					<Link href={PUBLIC_URL.vehicleCreate()}>
+						<Button className='gap-2 shadow-sm'>
+							<Plus className='size-4' /> Добавить ТС
+						</Button>
+					</Link>
+				)}
+				{/* <Link href={PUBLIC_URL.vehicleCreate()}>
 				<Button className='gap-2 shadow-sm'>
 					<Plus className='size-4' /> Добавить ТС
 				</Button>
-        </Link>
+        </Link> */}
 			</div>
 
 			{isLoading ? (
-        <div className='h-40 flex flex-col items-center justify-center'>
+				<div className='h-40 flex flex-col items-center justify-center'>
 					<div className='size-8 border-4 border-primary border-t-transparent rounded-full animate-spin' />
 				</div>
 			) : (
-				<DataTable 
-					columns={vehicleColumns} 
-					data={vehicles || []} 
+				<DataTable
+					columns={vehicleColumns}
+					data={vehicles || []}
 					filterKey='licensePlate'
 				/>
 			)}

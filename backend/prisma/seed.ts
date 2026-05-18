@@ -2,10 +2,12 @@ import {
   PrismaClient,
   EnumIncidentSeverity,
   EnumPartyRole,
+  Role,
 } from '@prisma/client';
 import type { Driver, Vehicle, Incident } from '@prisma/client';
 import { Pool } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
+import * as bcrypt from 'bcrypt';
 
 const connectionString = process.env.DATABASE_URL;
 const pool = new Pool({ connectionString });
@@ -326,6 +328,38 @@ async function main() {
   const drivers: Driver[] = [];
   const vehicles: Vehicle[] = [];
   const incidents: Incident[] = [];
+
+  // Создание тестовых пользователей с ролями
+  const hashedAdminPassword = await bcrypt.hash('admin123', 10);
+  await prisma.user.upsert({
+    where: { email: 'admin@test.ru' },
+    update: {
+      password: hashedAdminPassword,
+      role: Role.ADMIN,
+    },
+    create: {
+      email: 'admin@test.ru',
+      password: hashedAdminPassword,
+      role: Role.ADMIN,
+    },
+  });
+
+  const hashedUserPassword = await bcrypt.hash('user123', 10);
+  await prisma.user.upsert({
+    where: { email: 'user@test.ru' },
+    update: {
+      password: hashedUserPassword,
+      role: Role.USER,
+    },
+    create: {
+      email: 'user@test.ru',
+      password: hashedUserPassword,
+      role: Role.USER,
+    },
+  });
+
+  console.log('Создан администратор (admin@test.ru / admin123)');
+  console.log('Создан пользователь (user@test.ru / user123)');
 
   // 1. Создание 20 Водителей
   for (let i = 1; i <= 20; i++) {

@@ -12,18 +12,16 @@ import {
 } from '@/src/components/ui/dropdown-menu'
 import { ConfirmModal } from '@/src/components/ui/modals/ConfirmModal'
 import { PUBLIC_URL } from '@/src/config/url.config'
+import { useRole } from '@/src/hooks/auth/useRole'
 import { useDeleteIncident } from '@/src/hooks/incidents/useDeleteIncident'
 import { IIncident, IncidentSeverity } from '@/src/types/incident.interface'
 import { ColumnDef } from '@tanstack/react-table'
-import {
-	Calendar,
-	MapPin,
-	MoreHorizontal,
-} from 'lucide-react'
+import { Calendar, MapPin, MoreHorizontal } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 
 const ActionCell = ({ incidentId }: { incidentId: string }) => {
+	const role = useRole()
 	const [isConfirmOpen, setIsConfirmOpen] = useState(false)
 	const { deleteIncident, isLoadingDelete } = useDeleteIncident()
 
@@ -60,18 +58,22 @@ const ActionCell = ({ incidentId }: { incidentId: string }) => {
 							</DropdownMenuItem>
 						</Link>
 
-						<Link href={PUBLIC_URL.incidentEdit(incidentId)}>
-							<DropdownMenuItem className='gap-2'>
-								Редактировать
-							</DropdownMenuItem>
-						</Link>
+						{role === 'ADMIN' && (
+							<Link href={PUBLIC_URL.incidentEdit(incidentId)}>
+								<DropdownMenuItem className='gap-2'>
+									Редактировать
+								</DropdownMenuItem>
+							</Link>
+						)}
 
-						<DropdownMenuItem
-							className='text-destructive gap-2'
-							onClick={() => setIsConfirmOpen(true)}
-						>
-							Удалить
-						</DropdownMenuItem>
+						{role === 'ADMIN' && (
+							<DropdownMenuItem
+								className='text-destructive gap-2'
+								onClick={() => setIsConfirmOpen(true)}
+							>
+								Удалить
+							</DropdownMenuItem>
+						)}
 					</DropdownMenuGroup>
 				</DropdownMenuContent>
 			</DropdownMenu>

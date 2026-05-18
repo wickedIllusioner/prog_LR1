@@ -9,7 +9,9 @@ import {
 	CardTitle
 } from '@/src/components/ui/card'
 import { PUBLIC_URL } from '@/src/config/url.config'
+import { useRole } from '@/src/hooks/auth/useRole'
 import { useUpdateIncident } from '@/src/hooks/incidents/useUpdateIncident'
+import { yandexGeocoderService } from '@/src/services/yandex-geocoder.service'
 import { ParticipantRole } from '@/src/types/involved-party.interface'
 import '@pbe/react-yandex-maps'
 import { Map, Placemark, YMaps } from '@pbe/react-yandex-maps'
@@ -26,7 +28,6 @@ import {
 import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
-import { yandexGeocoderService } from '@/src/services/yandex-geocoder.service'
 
 const severityConfig: any = {
 	LOW: { label: 'Низкая', variant: 'outline' },
@@ -36,6 +37,8 @@ const severityConfig: any = {
 }
 
 export default function IncidentViewPage() {
+	const role = useRole()
+
 	const { incident, isIncidentLoading } = useUpdateIncident()
 	const [coords, setCoords] = useState([55.751574, 37.573856])
 	const [isMapLoaded, setIsMapLoaded] = useState(false)
@@ -92,11 +95,13 @@ export default function IncidentViewPage() {
 						</p>
 					</div>
 				</div>
-				<Link href={PUBLIC_URL.incidentEdit(incident?.id)}>
-					<Button className='gap-2'>
-						<Edit className='size-4' /> Редактировать
-					</Button>
-				</Link>
+				{role === 'ADMIN' && (
+					<Link href={PUBLIC_URL.incidentEdit(incident?.id)}>
+						<Button className='gap-2'>
+							<Edit className='size-4' /> Редактировать
+						</Button>
+					</Link>
+				)}
 			</div>
 
 			<div className='grid gap-6 md:grid-cols-3'>

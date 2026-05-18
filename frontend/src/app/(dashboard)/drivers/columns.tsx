@@ -10,18 +10,17 @@ import {
 } from '@/src/components/ui/dropdown-menu'
 import { ConfirmModal } from '@/src/components/ui/modals/ConfirmModal'
 import { PUBLIC_URL } from '@/src/config/url.config'
+import { useRole } from '@/src/hooks/auth/useRole'
 import { useDeleteDriver } from '@/src/hooks/drivers/useDeleteDriver'
 import { IDriver } from '@/src/types/driver.interface'
 import { ColumnDef } from '@tanstack/react-table'
-import {
-	MoreHorizontal,
-	Phone,
-	Truck
-} from 'lucide-react'
+import { MoreHorizontal, Phone, Truck } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 
 const ActionCell = ({ driver }: { driver: IDriver }) => {
+	const role = useRole()
+
 	const [isOpen, setIsOpen] = useState(false)
 	const { deleteDriver, isLoadingDelete } = useDeleteDriver()
 
@@ -44,24 +43,28 @@ const ActionCell = ({ driver }: { driver: IDriver }) => {
 							Копировать ID
 						</DropdownMenuItem>
 
-            <Link href={PUBLIC_URL.drivers(driver.id)}>
-              <DropdownMenuItem className='cursor-pointer'>
-                Сведения
-              </DropdownMenuItem>
-            </Link>
-
-						<Link href={PUBLIC_URL.driverEdit(driver.id)}>
+						<Link href={PUBLIC_URL.drivers(driver.id)}>
 							<DropdownMenuItem className='cursor-pointer'>
-								Редактировать
+								Сведения
 							</DropdownMenuItem>
 						</Link>
 
-						<DropdownMenuItem
-							className='text-destructive focus:text-destructive cursor-pointer'
-							onClick={() => setIsOpen(true)}
-						>
-							Удалить
-						</DropdownMenuItem>
+						{role === 'ADMIN' && (
+							<Link href={PUBLIC_URL.driverEdit(driver.id)}>
+								<DropdownMenuItem className='cursor-pointer'>
+									Редактировать
+								</DropdownMenuItem>
+							</Link>
+						)}
+
+						{role === 'ADMIN' && (
+							<DropdownMenuItem
+								className='text-destructive focus:text-destructive cursor-pointer'
+								onClick={() => setIsOpen(true)}
+							>
+								Удалить
+							</DropdownMenuItem>
+						)}
 					</DropdownMenuGroup>
 				</DropdownMenuContent>
 			</DropdownMenu>

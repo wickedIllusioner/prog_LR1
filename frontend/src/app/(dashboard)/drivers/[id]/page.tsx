@@ -9,19 +9,14 @@ import {
 	CardTitle
 } from '@/src/components/ui/card'
 import { PUBLIC_URL } from '@/src/config/url.config'
+import { useRole } from '@/src/hooks/auth/useRole'
 import { useUpdateDriver } from '@/src/hooks/drivers/useUpdateDriver'
-import {
-	ChevronLeft,
-	CreditCard,
-	Edit,
-	Phone,
-	Truck,
-	User
-} from 'lucide-react'
+import { ChevronLeft, CreditCard, Edit, Phone, Truck, User } from 'lucide-react'
 import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
 
 export default function DriverDetailsPage() {
+	const role = useRole()
 	const { driver, isDriverLoading } = useUpdateDriver()
 
 	if (isDriverLoading) {
@@ -46,11 +41,13 @@ export default function DriverDetailsPage() {
 						Карточка водителя
 					</h1>
 				</div>
-				<Link href={PUBLIC_URL.driverEdit(driver?.id)}>
-					<Button className='gap-2'>
-						<Edit className='size-4' /> Редактировать
-					</Button>
-				</Link>
+				{role === 'ADMIN' && (
+					<Link href={PUBLIC_URL.driverEdit(driver?.id)}>
+						<Button className='gap-2'>
+							<Edit className='size-4' /> Редактировать
+						</Button>
+					</Link>
+				)}
 			</div>
 
 			<div className='grid gap-6 md:grid-cols-2'>

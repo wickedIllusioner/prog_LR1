@@ -9,6 +9,7 @@ import {
 	CardTitle
 } from '@/src/components/ui/card'
 import { PUBLIC_URL } from '@/src/config/url.config'
+import { useRole } from '@/src/hooks/auth/useRole'
 import { useUpdateVehicle } from '@/src/hooks/vehicles/useUpdateVehicle'
 import {
 	Calendar,
@@ -23,6 +24,8 @@ import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
 
 export default function VehicleViewPage() {
+	const role = useRole()
+
 	const { vehicle, isVehicleLoading } = useUpdateVehicle()
 
 	if (isVehicleLoading) {
@@ -52,11 +55,13 @@ export default function VehicleViewPage() {
 						</Badge>
 					</div>
 				</div>
-				<Link href={PUBLIC_URL.vehicleEdit(vehicle?.id)}>
-					<Button className='gap-2 shadow-sm'>
-						<Edit className='size-4' /> Редактировать
-					</Button>
-				</Link>
+				{role === 'ADMIN' && (
+					<Link href={PUBLIC_URL.vehicleEdit(vehicle?.id)}>
+						<Button className='gap-2 shadow-sm'>
+							<Edit className='size-4' /> Редактировать
+						</Button>
+					</Link>
+				)}
 			</div>
 
 			<div className='grid gap-6 md:grid-cols-3'>
