@@ -3,10 +3,11 @@
 import { driverColumns } from './columns'
 import { Button } from '@/src/components/ui/button'
 import { DataTable } from '@/src/components/ui/data-table'
+import { Loader } from '@/src/components/ui/loader'
 import { PUBLIC_URL } from '@/src/config/url.config'
 import { useRole } from '@/src/hooks/auth/useRole'
 import { useGetDrivers } from '@/src/hooks/drivers/useGetDrivers'
-import { Plus } from 'lucide-react'
+import { Loader2, Plus } from 'lucide-react'
 import Link from 'next/link'
 
 export default function DriversPage() {
@@ -29,17 +30,10 @@ export default function DriversPage() {
 						</Button>
 					</Link>
 				)}
-				{/* <Link href={PUBLIC_URL.driverCreate()}>
-					<Button className='gap-2'>
-						<Plus className='size-4' /> Добавить водителя
-					</Button>
-				</Link> */}
 			</div>
 
 			{isLoading ? (
-				<div className='h-40 flex flex-col items-center justify-center'>
-					<div className='size-8 border-4 border-primary border-t-transparent rounded-full animate-spin' />
-				</div>
+				<Loader />
 			) : (
 				<DataTable
 					columns={driverColumns}

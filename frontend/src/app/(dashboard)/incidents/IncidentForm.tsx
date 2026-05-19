@@ -63,6 +63,7 @@ export function IncidentForm({
 	)
 
 	const mapRef = useRef<any>(null)
+	const isMapClickRef = useRef(false)
 	const [coords, setCoords] = useState([55.751574, 37.573856])
 	const [isMapLoaded, setIsMapLoaded] = useState(false)
 
@@ -119,6 +120,7 @@ export function IncidentForm({
 
 	// Клик по карте (Обратное геокодирование)
 	const handleMapClick = async (e: any) => {
+		isMapClickRef.current = true
 		const clickedCoords = e.get('coords')
 		setCoords(clickedCoords)
 
@@ -128,6 +130,31 @@ export function IncidentForm({
 			setLocation(address)
 		}
 	}
+
+  // Эффект для автоматического поиска на карте при ручном вводе
+	useEffect(() => {
+		if (!location || location.trim() === '') return
+
+		if (isMapClickRef.current) {
+			isMapClickRef.current = false
+			return
+		}
+
+		const timer = setTimeout(async () => {
+			if (isMapLoaded) {
+				const newCoords =
+					await yandexGeocoderService.getCoordsFromAddress(location)
+				if (newCoords) {
+					setCoords(newCoords)
+					if (mapRef.current) {
+						mapRef.current.setCenter(newCoords, 14)
+					}
+				}
+			}
+		}, 2000)
+
+		return () => clearTimeout(timer)
+	}, [location, isMapLoaded])
 
 	const addParticipant = () => {
 		setInvolvedParties([

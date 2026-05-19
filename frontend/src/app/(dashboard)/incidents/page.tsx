@@ -6,7 +6,7 @@ import { DataTable } from '@/src/components/ui/data-table'
 import { PUBLIC_URL } from '@/src/config/url.config'
 import { useRole } from '@/src/hooks/auth/useRole'
 import { useGetIncidents } from '@/src/hooks/incidents/useGetIncidents'
-import { AlertOctagon, Plus } from 'lucide-react'
+import { AlertOctagon, Loader2, Plus } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 
@@ -35,16 +35,11 @@ export default function IncidentsPage() {
 						</Button>
 					</Link>
 				)}
-				{/* <Link href={PUBLIC_URL.incidentsCreate()}>
-					<Button className='gap-2 shadow-md bg-destructive hover:bg-destructive/90 text-white'>
-						<Plus className='size-4' /> Сообщить об инциденте
-					</Button>
-				</Link> */}
 			</div>
 
 			{isLoading ? (
 				<div className='h-40 flex flex-col items-center justify-center'>
-					<div className='size-8 border-4 border-primary border-t-transparent rounded-full animate-spin' />
+					<Loader2 className='size-8 animate-spin text-primary' />
 				</div>
 			) : (
 				<div className='bg-card/30 rounded-lg p-2'>

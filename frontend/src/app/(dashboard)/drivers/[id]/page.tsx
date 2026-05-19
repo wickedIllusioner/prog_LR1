@@ -8,11 +8,11 @@ import {
 	CardHeader,
 	CardTitle
 } from '@/src/components/ui/card'
+import { Loader } from '@/src/components/ui/loader'
 import { PUBLIC_URL } from '@/src/config/url.config'
 import { useRole } from '@/src/hooks/auth/useRole'
 import { useUpdateDriver } from '@/src/hooks/drivers/useUpdateDriver'
 import { ChevronLeft, CreditCard, Edit, Phone, Truck, User } from 'lucide-react'
-import { Loader2 } from 'lucide-react'
 import Link from 'next/link'
 
 export default function DriverDetailsPage() {
@@ -21,9 +21,7 @@ export default function DriverDetailsPage() {
 
 	if (isDriverLoading) {
 		return (
-			<div className='flex h-[50vh] items-center justify-center'>
-				<Loader2 className='size-8 animate-spin text-primary' />
-			</div>
+			<Loader />
 		)
 	}
 

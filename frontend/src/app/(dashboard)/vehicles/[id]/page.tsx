@@ -8,6 +8,7 @@ import {
 	CardHeader,
 	CardTitle
 } from '@/src/components/ui/card'
+import { Loader } from '@/src/components/ui/loader'
 import { PUBLIC_URL } from '@/src/config/url.config'
 import { useRole } from '@/src/hooks/auth/useRole'
 import { useUpdateVehicle } from '@/src/hooks/vehicles/useUpdateVehicle'
@@ -30,9 +31,7 @@ export default function VehicleViewPage() {
 
 	if (isVehicleLoading) {
 		return (
-			<div className='flex h-[50vh] items-center justify-center'>
-				<Loader2 className='size-8 animate-spin text-primary' />
-			</div>
+			<Loader />
 		)
 	}
 
