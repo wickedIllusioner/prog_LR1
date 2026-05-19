@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { IncidentDto } from './dto/incident.dto';
 import { MailerService } from '@nestjs-modules/mailer';
+import { EnumIncidentSeverity } from '@prisma/client';
 
 @Injectable()
 export class IncidentsService {
@@ -118,29 +119,28 @@ export class IncidentsService {
       },
       skip: skip ? Number(skip) : undefined,
       take: take ? Number(take) : undefined,
-      // select: { date: true, location: true, description: true },
     });
   }
 
   async create(dto: IncidentDto) {
-    const { involvedParties, ...incidentData } = dto;
+    const { involvedParties, severity, ...incidentData } = dto;
 
+    const calculatedSeverity = this.determineSeverity(dto.description);
     const targetEmail = 'veselovka47@gmail.com';
 
     try {
       await this.mailerService.sendMail({
         to: targetEmail,
         subject: `Новое ДТП: ${dto.location}`,
-        text: `Зарегистрировано новое ДТП.\nУровень серьезности: ${dto.severity}`,
+        text: `Зарегистрировано новое ДТП.\nУровень серьезности: ${calculatedSeverity}`,
         html: `
           <h3>Зарегистрировано новое ДТП</h3>
-          <p><strong>Уровень серьезности:</strong> ${dto.severity}</p>
+          <p><strong>Уровень серьезности:</strong> ${calculatedSeverity}</p>
           <p><strong>Место:</strong> ${dto.location}</p>
           <p><strong>Дата:</strong> ${new Date(dto.date).toLocaleString('ru-RU')}</p>
           <p><strong>Описание:</strong> ${dto.description || 'Не указано'}</p>
         `,
       });
-      console.log(`Письмо отправлено на ${targetEmail}`);
     } catch (error) {
       console.error(`Ошибка при отправке письма: ${error}`);
     }
@@ -149,6 +149,7 @@ export class IncidentsService {
       data: {
         ...incidentData,
         date: new Date(dto.date),
+        severity: calculatedSeverity,
         involvedParties: {
           create: involvedParties.map((party) => ({
             role: party.role,
@@ -164,15 +165,17 @@ export class IncidentsService {
   }
 
   async update(id: string, dto: IncidentDto) {
-    const { involvedParties, ...incidentData } = dto;
+    const { involvedParties, severity, ...incidentData } = dto;
 
     await this.getById(id);
+    const calculatedSeverity = this.determineSeverity(dto.description);
 
     return this.prismaService.incident.update({
       where: { id },
       data: {
         ...incidentData,
         date: dto.date ? new Date(dto.date) : undefined,
+        severity: calculatedSeverity,
         involvedParties: {
           deleteMany: {},
           create: involvedParties.map((party) => ({
@@ -196,5 +199,34 @@ export class IncidentsService {
     return this.prismaService.incident.delete({
       where: { id },
     });
+  }
+
+  private determineSeverity(description?: string | null): EnumIncidentSeverity {
+    if (!description) return EnumIncidentSeverity.UNKNOWN;
+
+    const text = description.toLowerCase();
+
+    if (text.match(/(лобов|встречн|погиб|смерт|летальн|жертв|реанимац)/)) {
+      return EnumIncidentSeverity.CRITICAL;
+    }
+    if (
+      text.match(
+        /(пешеход|кювет|дерев|отбойник|госпитализац|пострадавш|перелом|тяжел)/,
+      )
+    ) {
+      return EnumIncidentSeverity.HIGH;
+    }
+    if (text.match(/(светофор|скорост|перекрестк|занос|ушиб|средн|красн)/)) {
+      return EnumIncidentSeverity.MEDIUM;
+    }
+    if (
+      text.match(
+        /(парковк|бампер|двор|касани|касательн|незначительн|царапин|легк|задним ходом)/,
+      )
+    ) {
+      return EnumIncidentSeverity.LOW;
+    }
+
+    return EnumIncidentSeverity.UNKNOWN;
   }
 }

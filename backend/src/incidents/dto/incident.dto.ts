@@ -28,11 +28,12 @@ export class IncidentDto {
   @IsString({ message: 'Описание должно быть строкой' })
   description?: string;
 
+  // Изменено: убрали @IsNotEmpty и добавили @IsOptional
+  @IsOptional()
   @IsEnum(EnumIncidentSeverity, {
-    message: 'Некорреткный уровень серьезности инцидента',
+    message: 'Некорректный уровень серьезности инцидента',
   })
-  @IsNotEmpty({ message: 'Укажите уровень серьезности инцидента' })
-  severity: EnumIncidentSeverity;
+  severity?: EnumIncidentSeverity;
 
   @ValidateNested({ each: true })
   @Type(() => InvolvedPartyDto)

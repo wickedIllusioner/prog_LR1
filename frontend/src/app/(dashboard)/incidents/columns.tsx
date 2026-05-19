@@ -88,6 +88,7 @@ const severityConfig: Record<
 		variant: 'default' | 'secondary' | 'destructive' | 'outline'
 	}
 > = {
+	[IncidentSeverity.UNKNOWN]: { label: 'Неизвестно', variant: 'secondary' },
 	[IncidentSeverity.LOW]: { label: 'Легкое', variant: 'secondary' },
 	[IncidentSeverity.MEDIUM]: { label: 'Среднее', variant: 'outline' },
 	[IncidentSeverity.HIGH]: { label: 'Высокое', variant: 'default' },

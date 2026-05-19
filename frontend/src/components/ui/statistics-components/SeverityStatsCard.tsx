@@ -8,6 +8,7 @@ interface SeverityStatsCardProps {
 }
 
 const severityLabels: Record<IncidentSeverity, string> = {
+	[IncidentSeverity.UNKNOWN]: 'Неизвестно',
 	[IncidentSeverity.LOW]: 'Легкое',
 	[IncidentSeverity.MEDIUM]: 'Среднее',
 	[IncidentSeverity.HIGH]: 'Высокое',

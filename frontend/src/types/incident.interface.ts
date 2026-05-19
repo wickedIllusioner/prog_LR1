@@ -1,6 +1,7 @@
 import { IInvolvedParty, ParticipantRole } from "./involved-party.interface"
 
 export enum IncidentSeverity {
+	UNKNOWN = 'UNKNOWN',
 	LOW = 'LOW',
 	MEDIUM = 'MEDIUM',
 	HIGH = 'HIGH',

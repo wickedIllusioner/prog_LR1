@@ -43,7 +43,7 @@ model Incident {
   date        DateTime
   location    String
   description String?
-  severity    EnumIncidentSeverity @default(LOW)
+  severity    EnumIncidentSeverity @default(UNKNOWN)
 
   involvedParties InvolvedParty[]
 
@@ -101,6 +101,7 @@ enum EnumIncidentSeverity {
   MEDIUM
   HIGH
   CRITICAL
+  UNKNOWN
 }
 
 enum EnumPartyRole {

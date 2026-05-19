@@ -433,18 +433,33 @@ async function main() {
   console.log('Водители привязаны к транспорту');
 
   // 4. Создание 20 Инцидентов
-  const severities = [
-    EnumIncidentSeverity.LOW,
-    EnumIncidentSeverity.MEDIUM,
-    EnumIncidentSeverity.HIGH,
-    EnumIncidentSeverity.CRITICAL,
-  ];
+  function determineSeverity(description: string | null): EnumIncidentSeverity {
+    if (!description) return EnumIncidentSeverity.UNKNOWN;
+    const text = description.toLowerCase();
+    if (text.match(/(лобов|встречн|погиб|смерт|летальн|жертв|реанимац)/))
+      return EnumIncidentSeverity.CRITICAL;
+    if (
+      text.match(
+        /(пешеход|кювет|дерев|отбойник|госпитализац|пострадавш|перелом|тяжел)/,
+      )
+    )
+      return EnumIncidentSeverity.HIGH;
+    if (text.match(/(светофор|скорост|перекрестк|занос|ушиб|средн|красн)/))
+      return EnumIncidentSeverity.MEDIUM;
+    if (
+      text.match(
+        /(парковк|бампер|двор|касани|касательн|незначительн|царапин|легк|задним ходом)/,
+      )
+    )
+      return EnumIncidentSeverity.LOW;
+    return EnumIncidentSeverity.UNKNOWN;
+  }
 
   for (let i = 0; i < 20; i++) {
-    const severity = getRandomItem(severities);
     const street = getRandomItem(streets);
     const houseNumber = getRandomInt(1, 150);
     const dateOffsetDays = getRandomInt(0, 365);
+    const desc = getRandomItem(incidentDescriptions);
 
     const incident = await prisma.incident.create({
       data: {
@@ -452,8 +467,8 @@ async function main() {
           new Date().getTime() - dateOffsetDays * 24 * 60 * 60 * 1000,
         ),
         location: `г. Москва, ул. ${street}, д. ${houseNumber}`,
-        description: getRandomItem(incidentDescriptions),
-        severity: severity,
+        description: desc,
+        severity: determineSeverity(desc),
       },
     });
     incidents.push(incident);
