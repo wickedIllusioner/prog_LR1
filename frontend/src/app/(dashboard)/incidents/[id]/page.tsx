@@ -30,6 +30,7 @@ import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 
 const severityConfig: any = {
+	UNKNOWN: { label: 'Неизвестно', variant: 'secondary' },
 	LOW: { label: 'Низкая', variant: 'outline' },
 	MEDIUM: { label: 'Средняя', variant: 'secondary' },
 	HIGH: { label: 'Высокая', variant: 'default' },
