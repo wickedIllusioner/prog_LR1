@@ -1,13 +1,27 @@
 import { api } from '../api/api.interceptors'
 import { API_URL } from '../config/api.config'
-import { IAuthResponse, ILoginData } from '../types/auth.interface'
+import {
+	IAuthResponse,
+	ILoginData,
+	ILoginResponse,
+	IVerify2FA
+} from '../types/auth.interface'
 import Cookies from 'js-cookie'
 import { jwtDecode } from 'jwt-decode'
 
 class AuthService {
 	async login(data: ILoginData) {
-		const response = await api<IAuthResponse>({
+		const response = await api<ILoginResponse>({
 			url: API_URL.auth(),
+			method: 'POST',
+			data
+		})
+		return response.data
+	}
+
+	async verify2fa(data: IVerify2FA) {
+		const response = await api<IAuthResponse>({
+			url: API_URL.auth('verify-2fa'),
 			method: 'POST',
 			data
 		})

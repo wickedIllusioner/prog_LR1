@@ -11,4 +11,10 @@ export class AuthController {
   async login(@Body() dto: LoginDto) {
     return this.authService.login(dto);
   }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('verify-2fa')
+  async verify2fa(@Body() dto: { email: string; code: string }) {
+    return this.authService.verify2fa(dto);
+  }
 }

@@ -332,13 +332,13 @@ async function main() {
   // Создание тестовых пользователей с ролями
   const hashedAdminPassword = await bcrypt.hash('admin123', 10);
   await prisma.user.upsert({
-    where: { email: 'admin@test.ru' },
+    where: { email: 'veselovka47@gmail.com' },
     update: {
       password: hashedAdminPassword,
       role: Role.ADMIN,
     },
     create: {
-      email: 'admin@test.ru',
+      email: 'veselovka47@gmail.com',
       password: hashedAdminPassword,
       role: Role.ADMIN,
     },
@@ -346,20 +346,20 @@ async function main() {
 
   const hashedUserPassword = await bcrypt.hash('user123', 10);
   await prisma.user.upsert({
-    where: { email: 'user@test.ru' },
+    where: { email: 'artyom.veselov2006@gmail.com' },
     update: {
       password: hashedUserPassword,
       role: Role.USER,
     },
     create: {
-      email: 'user@test.ru',
+      email: 'artyom.veselov2006@gmail.com',
       password: hashedUserPassword,
       role: Role.USER,
     },
   });
 
-  console.log('Создан администратор (admin@test.ru / admin123)');
-  console.log('Создан пользователь (user@test.ru / user123)');
+  console.log('Создан администратор (pass: admin123)');
+  console.log('Создан пользователь (pass: user123)');
 
   // 1. Создание 20 Водителей
   for (let i = 1; i <= 20; i++) {

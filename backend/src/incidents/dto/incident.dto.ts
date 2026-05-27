@@ -28,7 +28,6 @@ export class IncidentDto {
   @IsString({ message: 'Описание должно быть строкой' })
   description?: string;
 
-  // Изменено: убрали @IsNotEmpty и добавили @IsOptional
   @IsOptional()
   @IsEnum(EnumIncidentSeverity, {
     message: 'Некорректный уровень серьезности инцидента',
