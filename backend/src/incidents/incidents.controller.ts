@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -8,8 +9,11 @@ import {
   Post,
   Put,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { IncidentsService } from './incidents.service';
 import { IncidentDto } from './dto/incident.dto';
 import { JwtAuthGuard } from 'src/auth/guards/auth.guard';
@@ -19,11 +23,15 @@ import {
   CheckPolicies,
 } from 'src/casl/decorators/check-policies.decorator';
 import { Action } from 'src/casl/casl-ability.factory';
+import { FtpService } from 'src/shared/ftp.service';
 
 @Controller('incidents')
 @UseGuards(JwtAuthGuard, PoliciesGuard)
 export class IncidentsController {
-  constructor(private readonly incidentsService: IncidentsService) {}
+  constructor(
+    private readonly incidentsService: IncidentsService,
+    private readonly ftpService: FtpService,
+  ) {}
 
   @Get()
   @CheckPolicies(new CheckAbility(Action.Read, 'all'))
@@ -60,5 +68,22 @@ export class IncidentsController {
   @CheckPolicies(new CheckAbility(Action.Delete, 'all'))
   async deleteIncident(@Param('id') id: string) {
     return this.incidentsService.delete(id);
+  }
+
+  @HttpCode(200)
+  @Post('upload-photo')
+  @CheckPolicies(new CheckAbility(Action.Create, 'all'))
+  @UseInterceptors(FileInterceptor('photo'))
+  async uploadPhoto(@UploadedFile() file: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('Файл не был передан');
+    }
+
+    const fileName = await this.ftpService.uploadFile(
+      file.buffer,
+      file.originalname,
+    );
+
+    return { fileName };
   }
 }

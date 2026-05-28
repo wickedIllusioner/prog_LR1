@@ -24,7 +24,8 @@ class IncidentService {
 		date: string
 		location: string
 		description?: string
-		severity: IncidentSeverity
+		severity?: IncidentSeverity
+		photoUrl?: string
 		involvedParties: {
 			role: string
 			driverId: string
@@ -39,7 +40,7 @@ class IncidentService {
 		return createdIncident
 	}
 
-	async update(id: string, data: Partial<IIncident>) {
+	async update(id: string, data: Partial<IIncident> & { photoUrl?: string }) {
 		const { data: updatedIncident } = await api<IIncident>({
 			url: API_URL.incidents(`${id}`),
 			method: 'PUT',
@@ -55,6 +56,18 @@ class IncidentService {
 		})
 		return deletedIncident
 	}
+
+  async uploadPhoto(file: File): Promise<string> {
+    const formData = new FormData();
+    formData.append('photo', file);
+
+    const { data } = await api<{ fileName: string }>({
+      url: API_URL.incidents('upload-photo'),
+      method: 'POST',
+      data: formData,
+    });
+    return data.fileName;
+  }
 }
 
 export const incidentService = new IncidentService()

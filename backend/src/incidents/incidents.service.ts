@@ -22,6 +22,7 @@ export class IncidentsService {
         location: true,
         description: true,
         severity: true,
+        photoUrl: true,
       },
     });
   }
@@ -35,6 +36,7 @@ export class IncidentsService {
         location: true,
         description: true,
         severity: true,
+        photoUrl: true,
         involvedParties: {
           select: {
             role: true,
@@ -123,7 +125,7 @@ export class IncidentsService {
   }
 
   async create(dto: IncidentDto) {
-    const { involvedParties, severity, ...incidentData } = dto;
+    const { involvedParties, severity, photoUrl, ...incidentData } = dto;
 
     const calculatedSeverity = this.determineSeverity(dto.description);
     const targetEmail = 'veselovka47@gmail.com';
@@ -150,6 +152,7 @@ export class IncidentsService {
         ...incidentData,
         date: new Date(dto.date),
         severity: calculatedSeverity,
+        photoUrl: photoUrl || null,
         involvedParties: {
           create: involvedParties.map((party) => ({
             role: party.role,

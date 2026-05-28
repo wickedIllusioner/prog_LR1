@@ -5,7 +5,6 @@ import Cookies from 'js-cookie'
 
 const config: CreateAxiosDefaults = {
 	baseURL: SERVER_URL,
-	headers: getContentType()
 }
 
 const api = axios.create(config)
@@ -15,6 +14,11 @@ api.interceptors.request.use(config => {
 
 	if (config.headers && accessToken) {
 		config.headers.Authorization = `Bearer ${accessToken}`
+	}
+  
+	if (!(config.data instanceof FormData)) {
+		config.headers = config.headers || {}
+		config.headers['Content-Type'] = 'application/json'
 	}
 
 	return config

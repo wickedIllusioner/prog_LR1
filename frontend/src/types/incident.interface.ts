@@ -14,6 +14,7 @@ export interface IIncident {
 	location: string
 	description?: string
 	severity: IncidentSeverity
+  photoUrl?: string
 	involvedParties: IInvolvedParty[]
 	createdAt: string
 }

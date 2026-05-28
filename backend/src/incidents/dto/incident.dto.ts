@@ -34,6 +34,10 @@ export class IncidentDto {
   })
   severity?: EnumIncidentSeverity;
 
+  @IsOptional()
+  @IsString()
+  photoUrl?: string;
+
   @ValidateNested({ each: true })
   @Type(() => InvolvedPartyDto)
   @ArrayMinSize(1, {
