@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import ftp from 'basic-ftp';
+import { Client } from 'basic-ftp';
 import { Readable } from 'stream';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class FtpService {
   }
 
   async uploadFile(fileBuffer: Buffer, fileName: string): Promise<string> {
-    const client = new ftp.Client();
+    const client = new Client();
     // Настройка таймаута соединения
     client.ftp.verbose = false;
 
